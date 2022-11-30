@@ -18,6 +18,13 @@ extension String {
         self[index(startIndex, offsetBy: offset)]
     }
 
+    subscript(safeIndex offset: Int) -> Character? {
+        guard offset < self.count else {
+            return nil
+        }
+        return self[index(startIndex, offsetBy: offset)]
+    }
+
     subscript(range: Range<Int>) -> String {
         let startIndex = index(self.startIndex, offsetBy: range.lowerBound)
         return String(self[startIndex..<index(startIndex, offsetBy: range.count)])
