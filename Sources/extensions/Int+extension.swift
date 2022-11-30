@@ -34,3 +34,9 @@ extension Int {
         self.init(hex, radix: 16)
     }
 }
+
+extension Int {
+    mutating func increment() {
+        self += 1
+    }
+}

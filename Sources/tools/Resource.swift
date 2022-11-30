@@ -15,14 +15,7 @@ class Resource {
             Logger.e(self.logTag, "There is no argument \(argument)")
             return nil
         }
-        let url = URL(fileURLWithPath: filePath)
-        do {
-            Logger.v(self.logTag, "Loading \(filePath)")
-            return try String(contentsOf: url)
-        } catch {
-            Logger.e(self.logTag, "Error loading resource from \(url.absoluteString)")
-        }
-        return nil
+        return Self.getInput(absolutePath: filePath)
     }
 
     static func getInput(index: Int) -> String? {
@@ -30,9 +23,13 @@ class Resource {
             Logger.e(self.logTag, "There is no argument at position \(index)")
             return nil
         }
-        let url = URL(fileURLWithPath: filePath)
+        return Self.getInput(absolutePath: filePath)
+    }
+
+    static func getInput(absolutePath: String) -> String? {
+        let url = URL(fileURLWithPath: absolutePath)
         do {
-            Logger.v(self.logTag, "Loading \(filePath)")
+            Logger.v(self.logTag, "Loading \(absolutePath)")
             return try String(contentsOf: url)
         } catch {
             Logger.e(self.logTag, "Error loading resource from \(url.absoluteString)")
