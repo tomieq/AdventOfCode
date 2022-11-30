@@ -74,3 +74,27 @@ struct Point: CustomStringConvertible, Hashable {
         return points
     }
 }
+
+/*
+ 0,0
+   ______> x
+  |
+  |
+
+  y
+  */
+
+extension Point {
+    func move(_ direction: MoveDirection) -> Point {
+        switch direction {
+        case .right:
+            return Point(x: self.x.incremented, y: self.y)
+        case .left:
+            return Point(x: self.x.decremented, y: self.y)
+        case .up:
+            return Point(x: self.x, y: self.y.decremented)
+        case .down:
+            return Point(x: self.x, y: self.y.incremented)
+        }
+    }
+}
