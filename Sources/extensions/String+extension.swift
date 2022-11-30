@@ -102,3 +102,13 @@ extension String {
         self.removeSubrange(startIndex..<index(startIndex, offsetBy: range.count))
     }
 }
+
+extension String {
+    var array: [String] {
+        self.map{ String($0) }
+    }
+
+    var sorted: String {
+        self.array.sorted().joined()
+    }
+}

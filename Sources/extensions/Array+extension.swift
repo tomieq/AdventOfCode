@@ -22,7 +22,10 @@ extension Array {
 }
 
 extension Array where Element: Equatable {
-    mutating func remove(object: Element) {
+    mutating func remove(object: Element?) {
+        guard let object = object else {
+            return
+        }
         if let index = firstIndex(of: object) {
             self.remove(at: index)
         }
@@ -66,6 +69,28 @@ extension Array where Element: Equatable {
             uniqueValues.append(item)
         }
         return uniqueValues
+    }
+}
+
+extension Array where Element: Comparable {
+    var min: Element? {
+        guard var minimum = self[safeIndex: 0] else {
+            return nil
+        }
+        forEach { item in
+            minimum = Swift.min(minimum, item)
+        }
+        return minimum
+    }
+
+    var max: Element? {
+        guard var maximum = self[safeIndex: 0] else {
+            return nil
+        }
+        forEach { item in
+            maximum = Swift.max(maximum, item)
+        }
+        return maximum
     }
 }
 

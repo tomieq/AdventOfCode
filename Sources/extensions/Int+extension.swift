@@ -39,4 +39,18 @@ extension Int {
     mutating func increment() {
         self += 1
     }
+
+    mutating func decrement() {
+        self -= 1
+    }
+}
+
+extension Int {
+    var incremented: Int {
+        self + 1
+    }
+
+    var decremented: Int {
+        self - 1
+    }
 }
