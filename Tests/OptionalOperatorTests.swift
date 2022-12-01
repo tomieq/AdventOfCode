@@ -29,4 +29,20 @@ final class OptionalOperatorTests: XCTestCase {
         number -= addition
         XCTAssertEqual(number, 97)
     }
+
+    func test_compareOptionalInt() {
+        let number = 100
+        var other: Int?
+        XCTAssertFalse(number > other)
+        XCTAssertFalse(other > number)
+        other = 99
+        XCTAssertTrue(number > other)
+        XCTAssertFalse(other > number)
+        other = nil
+        XCTAssertFalse(number < other)
+        XCTAssertFalse(other < number)
+        other = 102
+        XCTAssertTrue(number < other)
+        XCTAssertFalse(other < number)
+    }
 }
