@@ -656,10 +656,10 @@ class Solution2021 {
             "<": ">",
         ]
         let worth = [
-            ")" : 1,
-            "]" : 2,
-            "}" : 3,
-            ">" : 4
+            ")": 1,
+            "]": 2,
+            "}": 3,
+            ">": 4,
         ]
 
         var totalScores = [Int]()
@@ -694,5 +694,180 @@ class Solution2021 {
         //3235371166
         let result = totalScores.sorted()[totalScores.count / 2]
         Logger.v(self.logTag, "Result: \(result)")
+    }
+
+    // MARK: Day 11 - part 1
+    func flashingNumbers(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        var map: [Point: Int] = [:]
+        for (y, line) in lines.enumerated() {
+            let digits = line.array.compactMap { $0.decimal }
+            for (x, number) in digits.enumerated() {
+                map[Point(x: x, y: y)] = number
+            }
+        }
+
+        func flash(_ point: Point) {
+            guard map[point] == 10 else { return }
+            for neighbour in point.linearNeighbours + point.diagonalNeighbours {
+                map[neighbour]?.increment()
+                flash(neighbour)
+            }
+        }
+        var flashCounter = 0
+        for _ in 1...100 {
+            // increase all point's energy level
+            for (point, _) in map {
+                map[point]?.increment()
+                flash(point)
+            }
+
+            // reset all flashing poit's energy levels to 0
+            for (point, _) in map {
+                if map[point] > 9 {
+                    map[point] = 0
+                    flashCounter.increment()
+                }
+            }
+        }
+        Logger.v(self.logTag, "Result: \(flashCounter)")
+    }
+
+    // MARK: Day 11 - part 2
+    func numbersFlashSimultaneously(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        var map: [Point: Int] = [:]
+        for (y, line) in lines.enumerated() {
+            let digits = line.array.compactMap { $0.decimal }
+            for (x, number) in digits.enumerated() {
+                map[Point(x: x, y: y)] = number
+            }
+        }
+        let mapSize = map.count
+
+        func flash(_ point: Point) {
+            guard map[point] == 10 else { return }
+            for neighbour in point.linearNeighbours + point.diagonalNeighbours {
+                map[neighbour]?.increment()
+                flash(neighbour)
+            }
+        }
+
+        for iteration in 1...2000 {
+            // increase all point's energy level
+            for (point, _) in map {
+                map[point]?.increment()
+                flash(point)
+            }
+
+            // reset all flashing poit's energy levels to 0
+            var flashCounter = 0
+            for (point, _) in map {
+                if map[point] > 9 {
+                    map[point] = 0
+                    flashCounter.increment()
+                }
+            }
+            if flashCounter == mapSize {
+                Logger.v(self.logTag, "Result: \(iteration)")
+                return
+            }
+        }
+        Logger.v(self.logTag, "No result")
+    }
+
+    // MARK: Day 12 - part 1
+    func nodeWalking(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        var connections: [String: [String]] = [:]
+        for line in lines {
+            let parts = line.split("-")
+            let start = parts[0]
+            let end = parts[1]
+
+            connections[start, default: []].append(end)
+            connections[end, default: []].append(start)
+        }
+
+        var readyPaths: [[String]] = []
+
+        func addNode(path: [String]) {
+            guard let lastNode = path.last, lastNode != "end" else {
+                readyPaths.append(path)
+                return
+            }
+            for tail in connections[lastNode] ?? [] {
+                if tail.lowercased() == tail, path.contains(tail) {
+                    continue
+                }
+                let newPath = path.withAppended(tail)
+                addNode(path: newPath)
+            }
+        }
+
+        addNode(path: ["start"])
+        Logger.v(self.logTag, "Result: \(readyPaths.count)")
+    }
+
+    // MARK: Day 12 - part 1
+    func nodeWalkingTwice(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        var connections: [String: [String]] = [:]
+        for line in lines {
+            let parts = line.split("-")
+            let start = parts[0]
+            let end = parts[1]
+
+            connections[start, default: []].append(end)
+            connections[end, default: []].append(start)
+        }
+
+        var readyPaths: [[String]] = []
+
+        func hasTwoSameNodes(path: [String]) -> Bool {
+            for body in path {
+                if body == "start" || body.uppercased() == body {
+                    continue
+                }
+                if (path.count{ $0 == body }) > 1 {
+                    return true
+                }
+            }
+            return false
+        }
+
+        func canApend(node: String, to path: [String]) -> Bool {
+            if node.uppercased() == node {
+                return true
+            }
+            if node == "start" {
+                return false
+            }
+            if !path.contains(node) {
+                return true
+            }
+            return !hasTwoSameNodes(path: path)
+        }
+
+        func addNode(path: [String]) {
+            guard let lastNode = path.last, lastNode != "end" else {
+                readyPaths.append(path)
+                return
+            }
+            for tail in connections[lastNode] ?? [] {
+                if !canApend(node: tail, to: path) {
+                    continue
+                }
+                let newPath = path.withAppended(tail)
+                addNode(path: newPath)
+            }
+        }
+
+        addNode(path: ["start"])
+        Logger.v(self.logTag, "Result: \(readyPaths.count)")
     }
 }
