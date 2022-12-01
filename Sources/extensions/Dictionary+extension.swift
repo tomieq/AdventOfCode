@@ -11,4 +11,8 @@ extension Dictionary {
     var rawValues: [Value] {
         self.map { $0.value }
     }
+
+    var rawKeys: [Key] {
+        self.map { $0.key }
+    }
 }

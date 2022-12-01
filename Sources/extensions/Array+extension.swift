@@ -92,6 +92,32 @@ extension Array where Element: Comparable {
         }
         return maximum
     }
+
+    // get n elements from an array that are min
+    func min(amount: Int) -> [Element] {
+        guard amount > 0 else { return [] }
+        var copy = self
+        var result: [Element] = []
+        for _ in 0..<amount {
+            guard let min = copy.min else { return result }
+            result.append(min)
+            copy.remove(object: min)
+        }
+        return result
+    }
+
+    // get n elements from an array that are max
+    func max(amount: Int) -> [Element] {
+        guard amount > 0 else { return [] }
+        var copy = self
+        var result: [Element] = []
+        for _ in 0..<amount {
+            guard let max = copy.max else { return result }
+            result.append(max)
+            copy.remove(object: max)
+        }
+        return result
+    }
 }
 
 extension Array {

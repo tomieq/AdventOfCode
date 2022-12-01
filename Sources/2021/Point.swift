@@ -98,3 +98,22 @@ extension Point {
         }
     }
 }
+
+extension Point {
+    var linearNeighbours: [Point] {
+        var points: [Point] = []
+        for direction in MoveDirection.allCases {
+            points.append(self.move(direction))
+        }
+        return points
+    }
+
+    var diagonalNeighbours: [Point] {
+        var points: [Point] = []
+        points.append(self.move(.up).move(.left))
+        points.append(self.move(.up).move(.right))
+        points.append(self.move(.down).move(.left))
+        points.append(self.move(.down).move(.right))
+        return points
+    }
+}

@@ -133,7 +133,7 @@ class Solution2021 {
         var gammaRate = ""
         var epsilonRate = ""
 
-        for index in 0...oneCounter.keys.count - 1 {
+        for index in 0..<oneCounter.keys.count {
             if oneCounter[index, default: 0] > numberAmount / 2 {
                 gammaRate.append("1")
                 epsilonRate.append("0")
@@ -215,7 +215,7 @@ class Solution2021 {
         var currentLine = 2
 
         var bingoCards: [BingoCard] = []
-        while currentLine < numberOfLines - 1 {
+        while currentLine < numberOfLines.decremented {
             var bingoCardNumbers: [Int] = []
             for _ in 1...5 {
                 let lineNumbers = lines[currentLine].split(" ").compactMap { $0.decimal }
@@ -248,7 +248,7 @@ class Solution2021 {
         var currentLine = 2
 
         var bingoCards: [BingoCard] = []
-        while currentLine < numberOfLines - 1 {
+        while currentLine < numberOfLines.decremented {
             var bingoCardNumbers: [Int] = []
             for _ in 1...5 {
                 let lineNumbers = lines[currentLine].split(" ").compactMap { $0.decimal }
@@ -355,7 +355,7 @@ class Solution2021 {
         var stats: [Int: Int] = [:]
 
         for fishTimer in fishTimers {
-            stats[fishTimer, default: 0] += 1
+            stats[fishTimer, default: 0].increment()
         }
         for _ in 1...256 {
             var updatedStats: [Int: Int] = [:]
@@ -454,8 +454,6 @@ class Solution2021 {
     // MARK: Day 8 - part 1
     func sevenSegmentFullSearch(input: String) {
         let lines = input.split("\n").filter{ !$0.isEmpty }
-        let input = "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab |cdfeb fcadb cdfeb cdbaf"
-        // mapping lenght to possible digit
 
         var result = 0
 
@@ -513,6 +511,188 @@ class Solution2021 {
                 result += number
             }
         }
+        Logger.v(self.logTag, "Result: \(result)")
+    }
+
+    // MARK: Day 9 - part 1
+    func lowestPoint(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        var map: [Point: Int] = [:]
+        for (y, line) in lines.enumerated() {
+            let digits = line.array.compactMap { $0.decimal }
+            for (x, number) in digits.enumerated() {
+                map[Point(x: x, y: y)] = number
+            }
+        }
+
+        var lowPoints: [Int] = []
+        main: for data in map {
+            let point = data.key
+            let value = data.value
+
+            for direction in MoveDirection.allCases {
+                if let upValue = map[point.move(direction)], upValue <= value {
+                    continue main
+                }
+            }
+            lowPoints.append(value + 1)
+        }
+        Logger.v(self.logTag, "Result: \(lowPoints.reduce(0, +))")
+    }
+
+    // MARK: Day 9 - part 2
+    func basins(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        var map: [Point: Int] = [:]
+        for (y, line) in lines.enumerated() {
+            let digits = line.array.compactMap { $0.decimal }
+            for (x, number) in digits.enumerated() {
+                map[Point(x: x, y: y)] = number
+            }
+        }
+
+        var sizes: [Int] = []
+
+        // start searching basins on map
+        for (mapPoint, _) in map {
+            var basinPoints: [Point] = []
+            var toCheck: [Point] = []
+
+            basinPoints.append(mapPoint)
+            toCheck.append(mapPoint)
+
+            loop: while !toCheck.isEmpty {
+                let point = toCheck.removeFirst()
+                let value = map[point]
+                if value == 9 {
+                    continue
+                }
+                // check all neighbours's value
+                for neighbourPoint in point.linearNeighbours {
+                    let neighbourValue = map[neighbourPoint]
+                    if neighbourValue.isNil || neighbourValue == 9 {
+                        continue
+                    }
+                    if value!.incremented == neighbourValue {
+                        if !basinPoints.contains(neighbourPoint) {
+                            toCheck.append(neighbourPoint)
+                            basinPoints.append(neighbourPoint)
+                        }
+                    }
+                }
+            }
+            sizes.append(basinPoints.count)
+        }
+        let largest = sizes.max(amount: 3)
+        let result = largest.reduce(1, *)
+        print(sizes.sorted())
+        print(largest)
+        print("Points on map: \(map.count) basins: \(sizes.count)")
+        // wrong 381570 too low
+        // wrong 1052256
+        // wrong 529475129
+        // wrong 6537520
+        // wrong 365976
+        Logger.v(self.logTag, "Result: \(result)")
+    }
+
+    // MARK: Day 10 - part 1
+    func corruptedCode(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        let definitions = [
+            "(": ")",
+            "[": "]",
+            "{": "}",
+            "<": ">",
+        ]
+
+        var points = [Int: Int]()
+        lines: for line in lines {
+            let tokens = line.array
+            var lilo = [String]()
+            for token in tokens {
+                if definitions.rawKeys.contains(token) {
+                    // its opening token
+                    lilo.append(token)
+                } else {
+                    // closing token
+                    let lastLifo = lilo.removeLast()
+                    let expectedClosingToken = definitions[lastLifo]
+                    if expectedClosingToken != token {
+                        // error
+                        Logger.v(self.logTag, "Expected \(expectedClosingToken.readable) but found \(token)")
+                        switch token {
+                        case ")":
+                            points[3, default: 0].increment()
+                        case "]":
+                            points[57, default: 0].increment()
+                        case "}":
+                            points[1197, default: 0].increment()
+                        case ">":
+                            points[25137, default: 0].increment()
+                        default:
+                            break
+                        }
+                        continue lines
+                    }
+                }
+            }
+        }
+        let result = points.map { $0.key * $0.value }.reduce(0, +)
+        Logger.v(self.logTag, "Result: \(result)")
+    }
+
+    // MARK: Day 10 - part 2
+    func incompleteCode(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        let definitions = [
+            "(": ")",
+            "[": "]",
+            "{": "}",
+            "<": ">",
+        ]
+        let worth = [
+            ")" : 1,
+            "]" : 2,
+            "}" : 3,
+            ">" : 4
+        ]
+
+        var totalScores = [Int]()
+        lines: for line in lines {
+            let tokens = line.array
+            var lilo = [String]()
+            for token in tokens {
+                if definitions.rawKeys.contains(token) {
+                    // its opening token
+                    lilo.append(token)
+                } else {
+                    // closing token
+                    let lastLifo = lilo.removeLast()
+                    let expectedClosingToken = definitions[lastLifo]
+                    if expectedClosingToken != token {
+                        // error
+                        continue lines
+                    }
+                }
+            }
+            if lilo.count > 0 {
+                var score = 0
+                while !lilo.isEmpty {
+                    let openingToken = lilo.removeLast()
+                    let closingToken = definitions[openingToken]
+                    score *= 5
+                    score += worth[closingToken!]
+                }
+                totalScores.append(score)
+            }
+        }
+        //3235371166
+        let result = totalScores.sorted()[totalScores.count / 2]
         Logger.v(self.logTag, "Result: \(result)")
     }
 }

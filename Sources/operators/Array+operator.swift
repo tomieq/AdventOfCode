@@ -7,7 +7,11 @@
 
 import Foundation
 
-infix operator -
 func - (lhs: [String], rhs: [String]) -> [String] {
     lhs.filter { !rhs.contains($0) }
+}
+
+func += <T>(lhs: inout [T], rhs: T?) {
+    guard let rhs = rhs else { return }
+    lhs.append(rhs)
 }
