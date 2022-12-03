@@ -112,3 +112,23 @@ extension String {
         self.array.sorted().joined()
     }
 }
+
+extension String {
+    var ascii: Int {
+        Int(self[0].asciiValue!)
+    }
+}
+
+extension String {
+    // zwraca elementy wspólne dla tekstów
+    func commonLetters(with other: String) -> String {
+        self.array.commonElements(with: other.array).joined()
+    }
+}
+
+extension String {
+    // cuts the String into even parts
+    func cut(into parts: Int) -> [String] {
+        return self.array.cut(into: parts).map{ $0.joined() }
+    }
+}

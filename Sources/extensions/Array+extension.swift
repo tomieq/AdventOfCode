@@ -38,6 +38,14 @@ extension Array {
             Array(self[$0..<Swift.min($0 + chunkSize, self.count)])
         }
     }
+
+    func cut(into parts: Int) -> [[Element]] {
+        guard self.count % parts == 0 else {
+            Logger.e("Array.cut", "Cannot cut array into \(parts) subarrays as the array length is not dividable by \(parts)")
+            return [self]
+        }
+        return self.chunked(by: self.count / parts)
+    }
 }
 
 extension Array {
@@ -131,5 +139,34 @@ extension Array {
         var copy = self
         copy.append(contentsOf: elems)
         return copy
+    }
+}
+
+extension Array {
+    mutating func append(_ elem: Element?) {
+        guard let strong = elem else {
+            return
+        }
+        self += strong
+    }
+}
+
+extension Array where Element == String {
+    mutating func append(_ elem: Character?) {
+        guard let elem = elem else {
+            return
+        }
+        self.append("\(elem)")
+    }
+
+    mutating func append(_ elem: Character) {
+        self.append("\(elem)")
+    }
+}
+
+extension Array where Element: Hashable {
+    // zwraca elementy wspólne dla obu list
+    func commonElements(with other: [Element]) -> [Element] {
+        Array(Set(self).intersection(Set(other)))
     }
 }

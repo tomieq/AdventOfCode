@@ -73,4 +73,17 @@ final class ArrayExtensionTests: XCTestCase {
         let array = [1, 2, 3]
         XCTAssertEqual(array.withAppended([4, 5]), [1, 2, 3, 4, 5])
     }
+
+    func test_commonElements() {
+        let one = "vJrwpWtwJgWr"
+        let two = "hcsFMMfFFhFp"
+        XCTAssertEqual(one.array.commonElements(with: two.array), ["p"])
+    }
+
+    func test_cut() {
+        let text = "vJrwpWtwJgWrhcsFMMfFFhFp"
+        let parts = text.array.cut(into: 2)
+        XCTAssertEqual(parts[0].joined(), "vJrwpWtwJgWr")
+        XCTAssertEqual(parts[1].joined(), "hcsFMMfFFhFp")
+    }
 }
