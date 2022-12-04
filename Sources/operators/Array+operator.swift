@@ -7,7 +7,7 @@
 
 import Foundation
 
-func - (lhs: [String], rhs: [String]) -> [String] {
+func - <T: Equatable>(lhs: [T], rhs: [T]) -> [T] {
     lhs.filter { !rhs.contains($0) }
 }
 
