@@ -22,11 +22,20 @@ extension Array {
 }
 
 extension Array where Element: Equatable {
-    mutating func remove(object: Element?) {
+    mutating func removeFirst(object: Element?) {
         guard let object = object else {
             return
         }
         if let index = firstIndex(of: object) {
+            self.remove(at: index)
+        }
+    }
+
+    mutating func removeAll(object: Element?) {
+        guard let object = object else {
+            return
+        }
+        while let index = firstIndex(of: object) {
             self.remove(at: index)
         }
     }
@@ -39,6 +48,7 @@ extension Array {
         }
     }
 
+    // cuts array into equal subarrays
     func cut(into parts: Int) -> [[Element]] {
         guard self.count % parts == 0 else {
             Logger.e("Array.cut", "Cannot cut array into \(parts) subarrays as the array length is not dividable by \(parts)")
@@ -109,7 +119,7 @@ extension Array where Element: Comparable {
         for _ in 0..<amount {
             guard let min = copy.min else { return result }
             result.append(min)
-            copy.remove(object: min)
+            copy.removeFirst(object: min)
         }
         return result
     }
@@ -122,7 +132,7 @@ extension Array where Element: Comparable {
         for _ in 0..<amount {
             guard let max = copy.max else { return result }
             result.append(max)
-            copy.remove(object: max)
+            copy.removeFirst(object: max)
         }
         return result
     }
@@ -149,6 +159,24 @@ extension Array {
         }
         self += strong
     }
+
+    mutating func append(_ elems: [Element]) {
+        self = elems + self
+    }
+
+    mutating func prepend(_ elem: Element?) {
+        guard let strong = elem else {
+            return
+        }
+        self = [strong] + self
+    }
+
+    mutating func prepend(_ elems: [Element]?) {
+        guard let elems = elems else {
+            return
+        }
+        self = elems + self
+    }
 }
 
 extension Array where Element == String {
@@ -168,5 +196,23 @@ extension Array where Element: Hashable {
     // zwraca elementy wspólne dla obu list
     func commonElements(with other: [Element]) -> [Element] {
         Array(Set(self).intersection(Set(other)))
+    }
+}
+
+extension Array {
+    func first(amount: Int) -> [Element] {
+        Array(self.prefix(amount))
+    }
+
+    func last(amount: Int) -> [Element] {
+        Array(self.suffix(amount))
+    }
+
+    mutating func removeFirst(amount: Int) {
+        self = Array(self.dropFirst(amount))
+    }
+
+    mutating func removeLast(amount: Int) {
+        self = Array(self.dropLast(amount))
     }
 }

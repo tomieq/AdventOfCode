@@ -15,11 +15,18 @@ final class ArrayExtensionTests: XCTestCase {
         XCTAssertEqual(array[safeIndex: 1], 6)
     }
 
-    func test_removeObject() {
-        var array = [1, 2, 3, 4, 5]
-        array.remove(object: 2)
+    func test_removeFirstObject() {
+        var array = [1, 2, 3, 4, 2]
+        array.removeFirst(object: 2)
         XCTAssertEqual(array.count, 4)
-        XCTAssertFalse(array.contains(2))
+        XCTAssertEqual(array, [1, 3, 4, 2])
+    }
+
+    func test_removeAllObject() {
+        var array = [1, 2, 3, 4, 2]
+        array.removeAll(object: 2)
+        XCTAssertEqual(array.count, 3)
+        XCTAssertEqual(array, [1, 3, 4])
     }
 
     func test_chunked() {
@@ -85,5 +92,35 @@ final class ArrayExtensionTests: XCTestCase {
         let parts = text.array.cut(into: 2)
         XCTAssertEqual(parts[0].joined(), "vJrwpWtwJgWr")
         XCTAssertEqual(parts[1].joined(), "hcsFMMfFFhFp")
+    }
+
+    func test_first() {
+        let list = [2, 3, 4, 6]
+        XCTAssertEqual(list.first(amount: 2), [2, 3])
+    }
+
+    func test_last() {
+        let list = [2, 3, 4, 6]
+        XCTAssertEqual(list.last(amount: 3), [3, 4, 6])
+    }
+
+    func test_removeFirstElements() {
+        var list = [2, 3, 4, 6, 9]
+        list.removeFirst(amount: 3)
+        XCTAssertEqual(list, [6, 9])
+    }
+
+    func test_removeLastElements() {
+        var list = [2, 3, 4, 6, 9]
+        list.removeLast(amount: 3)
+        XCTAssertEqual(list, [2, 3])
+    }
+
+    func test_prepend() {
+        var list = [2, 3, 4]
+        list.prepend(1)
+        XCTAssertEqual(list, [1, 2, 3, 4])
+        list.prepend([5, 6])
+        XCTAssertEqual(list, [5, 6, 1, 2, 3, 4])
     }
 }
