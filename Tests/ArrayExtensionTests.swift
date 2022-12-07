@@ -123,4 +123,22 @@ final class ArrayExtensionTests: XCTestCase {
         list.prepend([5, 6])
         XCTAssertEqual(list, [5, 6, 1, 2, 3, 4])
     }
+
+    func test_reversed() {
+        let i = [1, 2, 3, 4]
+        let reversed = i.reversed
+        XCTAssertEqual(reversed, [4, 3, 2, 1])
+    }
+
+    func test_reverse() {
+        var i = [1, 2, 3, 4]
+        i.reverse()
+        XCTAssertEqual(i, [4, 3, 2, 1])
+    }
+
+    func test_windowed() {
+        let array = [1, 2, 3, 4, 5]
+        XCTAssertEqual(array.windowed(by: 3), [[1, 2, 3], [2, 3, 4], [3, 4, 5]])
+        XCTAssertEqual(array.windowed(by: 3, offset: 2), [[1, 2, 3], [3, 4, 5]])
+    }
 }

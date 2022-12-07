@@ -132,3 +132,10 @@ extension String {
         return self.array.cut(into: parts).map{ $0.joined() }
     }
 }
+
+extension String {
+    mutating func append(_ other: String?) {
+        guard let other = other else { return }
+        self = self + other
+    }
+}

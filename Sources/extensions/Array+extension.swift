@@ -56,6 +56,40 @@ extension Array {
         }
         return self.chunked(by: self.count / parts)
     }
+
+    // creates windows out of an array
+    func windowed(by size: Int, offset: Int = 1) -> [[Element]] {
+        var result: [[Element]] = []
+        var index = 0
+        while index <= self.count - size {
+            let window = self.subArray(index..<index + size)
+            result.append(window)
+            index += offset
+        }
+        return result
+    }
+}
+
+extension Array {
+    func subArray(_ range: Range<Int>) -> [Element] {
+        Array(self[range])
+    }
+
+    func subArray(_ range: ClosedRange<Int>) -> [Element] {
+        Array(self[range])
+    }
+
+    func subArray(_ range: PartialRangeFrom<Int>) -> [Element] {
+        Array(self[range])
+    }
+
+    func subArray(_ range: PartialRangeThrough<Int>) -> [Element] {
+        Array(self[range])
+    }
+
+    func subArray(_ range: PartialRangeUpTo<Int>) -> [Element] {
+        Array(self[range])
+    }
 }
 
 extension Array {
@@ -214,5 +248,13 @@ extension Array {
 
     mutating func removeLast(amount: Int) {
         self = Array(self.dropLast(amount))
+    }
+
+    var reversed: [Element] {
+        Array(self.reversed())
+    }
+
+    mutating func reverse() {
+        self = self.reversed
     }
 }
