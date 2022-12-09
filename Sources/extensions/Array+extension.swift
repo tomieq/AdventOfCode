@@ -258,3 +258,13 @@ extension Array {
         self = self.reversed
     }
 }
+
+extension Array {
+    var tuple: (Element, Element) {
+        (self[0], self[1])
+    }
+
+    var triple: (Element, Element, Element) {
+        (self[0], self[1], self[2])
+    }
+}

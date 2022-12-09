@@ -117,3 +117,21 @@ extension Point {
         return points
     }
 }
+
+extension Point {
+    func isOnRigh(to other: Point) -> Bool {
+        self.x > other.x
+    }
+
+    func isOnLeft(to other: Point) -> Bool {
+        self.x < other.x
+    }
+
+    func isAbove(to other: Point) -> Bool {
+        self.y < other.y
+    }
+
+    func isBelow(to other: Point) -> Bool {
+        self.y > other.y
+    }
+}
