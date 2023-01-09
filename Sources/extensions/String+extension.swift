@@ -139,3 +139,11 @@ extension String {
         self = self + other
     }
 }
+
+extension String {
+    func chunked(by chunkSize: Int) -> [String] {
+        return stride(from: 0, to: self.count, by: chunkSize).map {
+            self.subString($0, Swift.min($0 + chunkSize, self.count))
+        }
+    }
+}
