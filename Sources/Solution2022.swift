@@ -5,6 +5,7 @@
 //  Created by Tomasz on 30/11/2022.
 //
 
+// group folding: Shift + option + command + left/right arrow
 import Foundation
 
 class Solution2022 {
@@ -988,6 +989,365 @@ class Solution2022 {
             }
         }
         let result = distances.min(amount: 1).first
+        Logger.v(self.logTag, "Result: \(result.readable)")
+        return result
+    }
+
+    // MARK: Day 13 - part 1
+    func parsingArray1(input: String) -> Int? {
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+
+        func parse(_ line: String) -> NestedArray {
+            var currentContainer = NestedArray()
+            var containers: [NestedArray] = [currentContainer]
+
+            for var part in line.split(",") {
+                while let sign = part.first, sign == "[" {
+                    part.removeFirst()
+                    let container = NestedArray()
+                    containers.append(container)
+                    currentContainer.append(container)
+                    currentContainer = container
+                }
+                if let number = "\(part)".trimming("]").decimal {
+                    let container = NestedArray(number: number)
+                    currentContainer.append(container)
+                }
+                while let sign = part.last, sign == "]" {
+                    part.removeLast()
+                    containers.removeLast()
+                    currentContainer = containers.last!
+                }
+            }
+
+//            print("Parsing \(line) resulted in \(currentContainer)")
+            return currentContainer
+        }
+        let pairs = lines.chunked(by: 2)
+        var correctOrderIndices: [Int] = []
+        for (index, pair) in pairs.enumerated() {
+//            print("Pair \(index + 1)")
+            let (top, bottom) = pair.tuple
+            let topContainer = parse(top)
+            let bottomContainer = parse(bottom)
+            if topContainer < bottomContainer {
+                correctOrderIndices.append(index + 1)
+            }
+        }
+        print("correctOrderIndices: \(correctOrderIndices)")
+        let result: Int? = correctOrderIndices.reduce(0, +)
+
+        Logger.v(self.logTag, "Result: \(result.readable)")
+        return result
+    }
+
+    // MARK: Day 13 - part 2
+    func parsingArray2(input: String) -> Int? {
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+
+        func parse(_ line: String) -> NestedArray {
+            var currentContainer = NestedArray()
+            var containers: [NestedArray] = [currentContainer]
+
+            for var part in line.split(",") {
+                while let sign = part.first, sign == "[" {
+                    part.removeFirst()
+                    let container = NestedArray()
+                    containers.append(container)
+                    currentContainer.append(container)
+                    currentContainer = container
+                }
+                if let number = "\(part)".trimming("]").decimal {
+                    let container = NestedArray(number: number)
+                    currentContainer.append(container)
+                }
+                while let sign = part.last, sign == "]" {
+                    part.removeLast()
+                    containers.removeLast()
+                    if currentContainer.hasNothing {
+                        currentContainer.list = []
+                    }
+                    currentContainer = containers.last!
+                }
+            }
+
+            var desc = currentContainer.description
+            desc.removeLast()
+            desc.removeFirst()
+//            print("Parsing \(line) resulted in \(desc)")
+            return currentContainer
+        }
+
+        var containers: [NestedArray] = []
+        for line in lines {
+            containers.append(parse(line))
+        }
+        let one = parse("[[2]]")
+        let two = parse("[[6]]")
+        containers.append(one)
+        containers.append(two)
+        containers.sort()
+//        print("sorted:\n\(containers.map{ $0.description }.joined(separator: "\n"))")
+
+        let desc = containers.map{ $0.description }
+        let first = desc.firstIndex(of: one.description) + 1
+        let second = desc.firstIndex(of: two.description) + 1
+//        print("first: \(first)")
+//        print("second: \(second)")
+        let result: Int? = (first) * (desc.firstIndex(of: two.description)! + 1)
+
+        Logger.v(self.logTag, "Result: \(result.readable)")
+        return result
+    }
+
+    // MARK: Day 14 - part 1
+    func sandPouring1(input: String) -> Int? {
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+
+        var map: [Point: String] = [:]
+        for line in lines {
+            let coordinates = line.split(" -> ")
+            let pairs = coordinates.windowed(by: 2)
+            for pair in pairs {
+                let (from, to) = pair.map{ $0.split(",").compactMap{ $0.decimal } }.tuple
+                let pointFrom = Point(x: from[0], y: from[1])
+                let pointTo = Point(x: to[0], y: to[1])
+
+                let line = pointFrom.straightLine(to: pointTo)
+                for point in line {
+                    map[point] = "#"
+                }
+            }
+        }
+
+        let sandStart = Point(x: 500, y: 0)
+
+        func nextMove(sand: Point) -> Point? {
+            if map[sand.move(.down)].isNil {
+                return sand.move(.down)
+            }
+            if map[sand.move(.down).move(.left)].isNil {
+                return sand.move(.down).move(.left)
+            }
+            if map[sand.move(.down).move(.right)].isNil {
+                return sand.move(.down).move(.right)
+            }
+            return nil
+        }
+
+        func nextPosition() -> Point? {
+            var pos = sandStart
+            let maxY = map.rawKeys.map{ $0.y }.max()!
+            while let next = nextMove(sand: pos) {
+                pos = next
+                if pos.y > maxY {
+                    return nil
+                }
+            }
+            return pos
+        }
+
+        var counter = 0
+        while let sandPos = nextPosition() {
+            map[sandPos] = "o"
+            counter.increment()
+        }
+        for y in 0...10 {
+            var line = ""
+            for x in 494...503 {
+                line.append(map[Point(x: x, y: y), default: "."])
+            }
+            print(line)
+        }
+        let result: Int? = counter
+
+        Logger.v(self.logTag, "Result: \(result.readable)")
+        return result
+    }
+
+    // MARK: Day 14 - part 2
+    func sandPouring2(input: String) -> Int? {
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+
+        var map: [Point: String] = [:]
+        for line in lines {
+            let coordinates = line.split(" -> ")
+            let pairs = coordinates.windowed(by: 2)
+            for pair in pairs {
+                let (from, to) = pair.map{ $0.split(",").compactMap{ $0.decimal } }.tuple
+                let pointFrom = Point(x: from[0], y: from[1])
+                let pointTo = Point(x: to[0], y: to[1])
+
+                let line = pointFrom.straightLine(to: pointTo)
+                for point in line {
+                    map[point] = "#"
+                }
+            }
+        }
+
+        let maxY = map.rawKeys.map{ $0.y }.max()!
+        let minX = map.rawKeys.map{ $0.x }.min()!
+        let maxX = map.rawKeys.map{ $0.x }.max()!
+
+        for x in minX - maxY...maxX + maxY {
+            map[Point(x: x, y: maxY + 2)] = "#"
+        }
+
+        let sandStart = Point(x: 500, y: 0)
+        func nextMove(sand: Point) -> Point? {
+            if map[sand.move(.down)].isNil {
+                return sand.move(.down)
+            }
+            if map[sand.move(.down).move(.left)].isNil {
+                return sand.move(.down).move(.left)
+            }
+            if map[sand.move(.down).move(.right)].isNil {
+                return sand.move(.down).move(.right)
+            }
+            return nil
+        }
+
+        func nextPosition() -> Point? {
+            var pos = sandStart
+
+            while let next = nextMove(sand: pos) {
+                pos = next
+            }
+            if pos == sandStart {
+                return nil
+            }
+            return pos
+        }
+
+        var counter = 1
+        while let sandPos = nextPosition() {
+            map[sandPos] = "o"
+            counter.increment()
+        }
+        let result: Int? = counter
+        Logger.v(self.logTag, "Result: \(result.readable)")
+        return result
+    }
+
+    // MARK: Day 15 - part 1
+    func sensorBeaconRange1(input: String) -> Int? {
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+
+        let theLine = 2000000
+
+        var map: [Point: String] = [:]
+        for line in lines {
+            var sensor = Point(x: 0, y: 0)
+            var beacon = Point(x: 0, y: 0)
+            let parts = line.split(" ")
+            if let x = parts[2].trimming("x=,").decimal, let y = parts[3].trimming("y=:").decimal {
+                sensor = Point(x: x, y: y)
+            }
+            if let x = parts[8].trimming("x=,").decimal, let y = parts[9].trimming("y=").decimal {
+                beacon = Point(x: x, y: y)
+            }
+            let verticalDistance = abs(sensor.y - beacon.y)
+            let horizontalDistance = abs(sensor.x - beacon.x)
+            let topDistance = horizontalDistance + verticalDistance
+            // up
+            var distance = topDistance
+            var y = sensor.y
+            while distance >= 0 {
+                if y == theLine {
+                    for x in (sensor.x - distance)...(sensor.x + distance) {
+                        map[Point(x: x, y: y)] = "#"
+                    }
+                }
+                distance.decrement()
+                y.increment()
+            }
+
+            distance = topDistance
+            y = sensor.y
+            while distance >= 0 {
+                if y == theLine {
+                    for x in (sensor.x - distance)...(sensor.x + distance) {
+                        map[Point(x: x, y: y)] = "#"
+                    }
+                }
+                distance.decrement()
+                y.decrement()
+            }
+
+            map[sensor] = "S"
+            map[beacon] = "B"
+        }
+        func printMap() {
+            let minY = map.rawKeys.map{ $0.y }.min()!
+            let maxY = map.rawKeys.map{ $0.y }.max()!
+            let minX = map.rawKeys.map{ $0.x }.min()!
+            let maxX = map.rawKeys.map{ $0.x }.max()!
+            for y in minY...maxY {
+                var line = ""
+                for x in minX...maxX {
+                    line.append(map[Point(x: x, y: y), default: "."])
+                }
+                print(line)
+            }
+        }
+//        printMap()
+        let points = map.filter { $0.key.y == theLine }.filter{ $0.value == "#" }.map{ $0.value }.count
+        let result: Int? = points
+
+        Logger.v(self.logTag, "Result: \(result.readable)")
+        return result
+    }
+
+    // MARK: Day 15 - part 2
+    func sensorBeaconRange2(input: String) -> Int? {
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+
+        var map: [Int: [ClosedRange<Int>]] = [:]
+        for line in lines {
+            var sensor = Point(x: 0, y: 0)
+            var beacon = Point(x: 0, y: 0)
+            let parts = line.split(" ")
+            if let x = parts[2].trimming("x=,").decimal, let y = parts[3].trimming("y=:").decimal {
+                sensor = Point(x: x, y: y)
+                map[y] = map[y, default: [0...0]].withAppended(x...x)
+            }
+            if let x = parts[8].trimming("x=,").decimal, let y = parts[9].trimming("y=").decimal {
+                beacon = Point(x: x, y: y)
+                map[y] = map[y, default: [0...0]].withAppended(x...x)
+            }
+
+            let verticalDistance = abs(sensor.y - beacon.y)
+            let horizontalDistance = abs(sensor.x - beacon.x)
+            let topDistance = horizontalDistance + verticalDistance
+            // up
+            var distance = topDistance
+            var y = sensor.y
+            while distance >= 0 {
+                let range = (sensor.x - distance)...(sensor.x + distance)
+                map[y] = ClosedRange.combine(map[y, default: [0...0]].withAppended(range))
+                distance.decrement()
+                y.increment()
+            }
+
+            distance = topDistance
+            y = sensor.y
+            while distance >= 0 {
+                let range = [(sensor.x - distance)...(sensor.x + distance)]
+                map[y] = ClosedRange.combine(map[y, default: [0...0]].withAppended(range))
+                distance.decrement()
+                y.decrement()
+            }
+        }
+
+        for (y, ranges) in map {
+            if ranges.count == 2, ranges[0].upperBound.incremented == ranges[1].lowerBound.decremented {
+                let result = ranges[0].upperBound.incremented * 4000000 + y
+                Logger.v(self.logTag, "Result: \(result)")
+                return result
+            }
+        }
+
+        let result: Int? = 0
         Logger.v(self.logTag, "Result: \(result.readable)")
         return result
     }
