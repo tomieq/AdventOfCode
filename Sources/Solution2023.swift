@@ -175,6 +175,47 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    
+    // MARK: Day 3 - part 2
+    func engine2(input: String) -> Int {
+        
+        var map: [Point: String] = [:]
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+        for (y, line) in lines.enumerated() {
+            for (x, value) in line.array.enumerated() {
+                map[Point(x: x, y: y)] = value
+            }
+        }
+        let gearPoints = map.filter { $0.value == "*" }.map { $0.key }
+        var gearStat: [Point: [Int]] = [:]
+        
+        var textNumber = ""
+        var connectedGear: Point? = nil
+        for (y, line) in lines.enumerated() {
+            for (x, value) in line.array.enumerated() {
+                if value.decimal.notNil {
+                    textNumber.append(value)
+                    let point = Point(x: x, y: y)
+                    let neighbourPoints = point.linearNeighbours + point.diagonalNeighbours
+                    let partPoints = neighbourPoints.commonElements(with: gearPoints)
+                    if partPoints.isEmpty.not {
+                        connectedGear = partPoints.first!
+                    }
+                } else if !textNumber.isEmpty {
+                    if let connectedGear = connectedGear {
+                        gearStat[connectedGear, default: []].append(textNumber.decimal!)
+                    }
+                    textNumber = ""
+                    connectedGear = nil
+                }
+            }
+        }
+        let ratios = gearStat.filter { $0.value.count == 2 } .map { $0.value.reduce(1, *) }
+        let result = ratios.reduce(0, +)
+
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 
     // MARK: Day 4 - part 1
     func scratchcardsGame(input: String) -> Int {

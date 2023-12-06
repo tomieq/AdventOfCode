@@ -46,6 +46,8 @@ final class Solution2023Tests: XCTestCase {
         let input = self.prodInput(day: 3) ?? ""
         let result1 = Solution2023().engine(input: input)
         XCTAssertEqual(result1, 532331)
+        let result2 = Solution2023().engine2(input: input)
+        XCTAssertEqual(result2, 82301120)
     }
     
     func test_day4() throws {
