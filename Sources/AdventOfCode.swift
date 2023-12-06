@@ -5,8 +5,5 @@ public struct AdventOfCode {
             Logger.e("Main", "No input data!")
             return
         }
-
-        let solution = Solution2021()
-        solution.sonarSweepDepthMeasurementSmoothing(input: input)
     }
 }

@@ -18,6 +18,9 @@ final class OptionalOperatorTests: XCTestCase {
         addition = 3
         number += addition
         XCTAssertEqual(number, 103)
+        XCTAssertEqual(12 + nil, 12)
+        XCTAssertEqual(nil + 12, 12)
+        XCTAssertEqual(nil + nil, 0)
     }
 
     func test_substractOptionalInt() {
@@ -44,5 +47,16 @@ final class OptionalOperatorTests: XCTestCase {
         other = 102
         XCTAssertTrue(number < other)
         XCTAssertFalse(other < number)
+    }
+
+    func test_multiplyOptionalInt() {
+        var optional: Int? = nil
+        XCTAssertEqual(optional * 10, 0)
+        XCTAssertEqual(10 * optional, 0)
+        XCTAssertEqual(optional * optional, 0)
+        optional = 2
+        XCTAssertEqual(optional * 10, 20)
+        XCTAssertEqual(10 * optional, 20)
+        XCTAssertEqual(optional * optional, 4)
     }
 }
