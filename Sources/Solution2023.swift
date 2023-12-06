@@ -111,4 +111,29 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    
+    // MARK: Day 2 - part 2
+    func cubeGame2(input: String) -> Int {
+        let result = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+            .compactMap { text -> Int? in
+                let parts = text.split(":")
+                let rounds = parts[1].split(";")
+                var stats: [String: Int] = [:]
+                for round in rounds {
+                    let entries = round.trimmed.split(",")
+                    for entry in entries {
+                        let (amountTxt, color) = entry.trimmed.split(" ").tuple
+                        let amount = amountTxt.decimal!
+                        stats[color] = max(amount, stats[color, default: amount])
+                    }
+                }
+                return stats["red"] * stats["blue"] * stats["green"]
+            }
+            .reduce(0, +)
+
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }

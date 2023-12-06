@@ -231,6 +231,10 @@ extension Array where Element: Hashable {
     func commonElements(with other: [Element]) -> [Element] {
         Array(Set(self).intersection(Set(other)))
     }
+
+    func hasCommonElements(with other: [Element]) -> Bool {
+        !Set(self).intersection(Set(other)).isEmpty
+    }
 }
 
 extension Array {
@@ -266,5 +270,9 @@ extension Array {
 
     var triple: (Element, Element, Element) {
         (self[0], self[1], self[2])
+    }
+    
+    var quadruple: (Element, Element, Element, Element) {
+        (self[0], self[1], self[2], self[3])
     }
 }

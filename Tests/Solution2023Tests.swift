@@ -38,5 +38,7 @@ final class Solution2023Tests: XCTestCase {
         let input = self.prodInput(day: 2) ?? ""
         let result1 = Solution2023().cubeGame(input: input)
         XCTAssertEqual(result1, 2879)
+        let result2 = Solution2023().cubeGame2(input: input)
+        XCTAssertEqual(result2, 65122)
     }
 }
