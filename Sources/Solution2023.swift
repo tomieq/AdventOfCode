@@ -168,4 +168,42 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    
+    // MARK: Day 4 - part 2
+    func scratchcardsGame2(input: String) -> Int {
+        let wonCopies = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+            .map { text in
+                let parts = text.split(":")
+                let (left, right) = parts[1].trimmed.split("|").tuple
+                let winningNumbers = left.trimmed.split(" ").filter { !$0.isEmpty }
+                let playerNumbers = right.trimmed.split(" ").filter { !$0.isEmpty }
+                let matchingNumbers = playerNumbers.commonElements(with: winningNumbers)
+                return matchingNumbers.count
+            }
+        print(wonCopies.enumerated().map{ "card \($0.offset + 1): \($0.element)" })
+        
+        var sumOfCopies: [Int: Int] = [:]
+        func numberOfCopies(at index: Int) -> Int {
+            if wonCopies[index] == 0 {
+                sumOfCopies[index] = 0
+                return 0
+            }
+            let copyIndexes = index + 1 ... index + wonCopies[index]
+            let sum = wonCopies[index] + copyIndexes.compactMap{ sumOfCopies[$0] }.reduce(0, +)
+            sumOfCopies[index] = sum
+            print("card \(index + 1) won \(sum) cards")
+            return sum
+        }
+
+        var result = wonCopies.count
+        var i = wonCopies.count.decremented
+        while i >= 0 {
+            result += numberOfCopies(at: i)
+            i.decrement()
+        }
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }

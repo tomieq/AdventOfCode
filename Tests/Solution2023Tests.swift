@@ -46,5 +46,7 @@ final class Solution2023Tests: XCTestCase {
         let input = self.prodInput(day: 4) ?? ""
         let result1 = Solution2023().scratchcardsGame(input: input)
         XCTAssertEqual(result1, 21088)
+        let result2 = Solution2023().scratchcardsGame2(input: input)
+        XCTAssertEqual(result2, 6874754)
     }
 }
