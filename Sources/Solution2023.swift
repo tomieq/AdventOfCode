@@ -136,4 +136,36 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    
+    // MARK: Day 4 - part 1
+    func scratchcardsGame(input: String) -> Int {
+        let result = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+            .map { text in
+                let parts = text.split(":")
+                let (left, right) = parts[1].trimmed.split("|").tuple
+                let winningNumbers = left.trimmed.split(" ").filter { !$0.isEmpty }
+                let playerNumbers = right.trimmed.split(" ").filter { !$0.isEmpty }
+                let matchingNumbers = playerNumbers.commonElements(with: winningNumbers)
+                return matchingNumbers
+            }
+            .map {
+                let matchAmount = $0.count
+                switch matchAmount {
+                case 0:
+                    return 0
+                case 1:
+                    return 1
+                default:
+                    var score = 1
+                    (0..<matchAmount.decremented).forEach { _ in score *= 2 }
+                    return score
+                }
+            }
+            .reduce(0, +)
+
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }
