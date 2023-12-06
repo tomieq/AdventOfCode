@@ -42,6 +42,12 @@ final class Solution2023Tests: XCTestCase {
         XCTAssertEqual(result2, 65122)
     }
     
+    func test_day3() throws {
+        let input = self.prodInput(day: 3) ?? ""
+        let result1 = Solution2023().engine(input: input)
+        XCTAssertEqual(result1, 532331)
+    }
+    
     func test_day4() throws {
         let input = self.prodInput(day: 4) ?? ""
         let result1 = Solution2023().scratchcardsGame(input: input)

@@ -137,6 +137,45 @@ class Solution2023 {
         return result
     }
     
+    // MARK: Day 3 - part 1
+    func engine(input: String) -> Int {
+        
+        var map: [Point: String] = [:]
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+        for (y, line) in lines.enumerated() {
+            for (x, value) in line.array.enumerated() {
+                map[Point(x: x, y: y)] = value
+            }
+        }
+        let engineParts = map.filter { $0.value != "." && $0.value.decimal.isNil }
+        
+        var partNumbers: [Int] = []
+        var textNumber = ""
+        var isPartNumber = false
+        for (y, line) in lines.enumerated() {
+            for (x, value) in line.array.enumerated() {
+                if value.decimal.notNil {
+                    textNumber.append(value)
+                    let point = Point(x: x, y: y)
+                    let neighbourPoints = point.linearNeighbours + point.diagonalNeighbours
+                    if neighbourPoints.hasCommonElements(with: engineParts.rawKeys) {
+                        isPartNumber = true
+                    }
+                } else if !textNumber.isEmpty {
+                    if isPartNumber {
+                        partNumbers.append(textNumber.decimal!)
+                    }
+                    textNumber = ""
+                    isPartNumber = false
+                }
+            }
+        }
+        let result = partNumbers.reduce(0, +)
+
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+
     // MARK: Day 4 - part 1
     func scratchcardsGame(input: String) -> Int {
         let result = input.split("\n")
