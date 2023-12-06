@@ -301,4 +301,29 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    
+    // MARK: Day 6 - part 2
+    func boatRace2(input: String) -> Int {
+        let lines = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+        
+        let time = lines[0].removed(text: "Time:").trimmed.removed(text: " ").decimal
+        let distance = lines[1].removed(text: "Distance:").trimmed.removed(text: " ").decimal
+        
+        struct Race {
+            let time: Int
+            let distance: Int
+        }
+        let race = Race(time: time!, distance: distance!)
+        var result = 0
+        for speed in 0..<race.time {
+            let distance = (race.time - speed) * speed
+            if distance > race.distance {
+                result.increment()
+            }
+        }
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }
