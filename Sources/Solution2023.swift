@@ -206,4 +206,71 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    
+    // MARK: Day 5 - part 1
+    func soilMapper(input: String) -> Int {
+        let lines = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+        class Rule: CustomStringConvertible {
+            let name: String
+            let from: String
+            let to: String
+            var lines: [String] = []
+            init(name: String) {
+                self.name = name
+                let parts = name.split("-to-")
+                self.from = parts[0]
+                self.to = parts[1]
+            }
+            var description: String {
+                "name: \(name), lines: \(lines)"
+            }
+            func convert(_ input: Int) -> Int {
+                for line in lines {
+                    let (destinationStart, sourceStart, length) = line.split(" ").compactMap { $0.decimal }.triple
+                    if (sourceStart..<sourceStart + length).contains(input) {
+                        let diff = sourceStart - destinationStart
+                        return input - diff
+                    }
+                }
+                return input
+            }
+        }
+        
+        var seeds: [Int] = []
+        var rules: [Rule] = []
+        var currentRule: Rule?
+        for line in lines {
+            if line.hasPrefix("seeds:") {
+                seeds = line.removed(text: "seeds:").trimmed.split(" ").compactMap{ $0.decimal }
+            } else if line.hasSuffix("map:") {
+                let name = line.removed(text: "map:").trimmed
+                let rule = Rule(name: name)
+                currentRule = rule
+                rules.append(rule)
+            } else if let rule = currentRule {
+                rule.lines.append(line.trimmed)
+            }
+        }
+
+        var closestLocation = Int.max
+        for seed in seeds {
+            var from = "seed"
+            var converted = seed
+            while true {
+                let rule = rules.first{ $0.from == from }!
+                from = rule.to
+                converted = rule.convert(converted)
+//                print("rule \(rule.name) converted into: \(converted)")
+                if rule.to == "location" {
+                    closestLocation = min(closestLocation, converted)
+                    break
+                }
+            }
+        }
+//        let test = rules.first{ $0.name == "seed-to-soil" }?.convert(99)
+        Logger.v(self.logTag, "Result = \(closestLocation)")
+        return closestLocation
+    }
 }
