@@ -71,4 +71,44 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    
+    // MARK: Day 2 - part 1
+    func cubeGame(input: String) -> Int {
+        let result = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+            .compactMap { text -> Int? in
+                let parts = text.split(":")
+                let game = parts[0].removed(text: "Game ").decimal
+                let rounds = parts[1].split(";")
+                for round in rounds {
+                    let entries = round.trimmed.split(",")
+                    for entry in entries {
+                        let (amountTxt, color) = entry.trimmed.split(" ").tuple
+                        let amount = amountTxt.decimal!
+                        switch color {
+                        case "red":
+                            if amount > 12 {
+                                return nil
+                            }
+                        case "green":
+                            if amount > 13 {
+                                return nil
+                            }
+                        case "blue":
+                            if amount > 14 {
+                                return nil
+                            }
+                        default:
+                            break
+                        }
+                    }
+                }
+                return game
+            }
+            .reduce(0, +)
+
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }

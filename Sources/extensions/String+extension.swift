@@ -66,6 +66,16 @@ extension String {
     func trimming(_ characters: String) -> String {
         return self.trimmingCharacters(in: CharacterSet(charactersIn: characters))
     }
+
+    var trimmed: String {
+        self.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+
+extension String {
+    func removed(text: String) -> String {
+        self.replacingOccurrences(of: text, with: "")
+    }
 }
 
 extension String {
