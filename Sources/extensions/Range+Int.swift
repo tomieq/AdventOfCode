@@ -55,4 +55,10 @@ extension ClosedRange<Int> {
         }
         return combined
     }
+    
+    func chunked(by chunkSize: Int) -> [ClosedRange<Int>] {
+        return stride(from: self.lowerBound, to: self.upperBound.incremented, by: chunkSize).map { sth in
+            return sth...Swift.min(sth + chunkSize.decremented, self.upperBound)
+        }
+    }
 }
