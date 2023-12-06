@@ -273,4 +273,32 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(closestLocation)")
         return closestLocation
     }
+
+    // MARK: Day 6 - part 1
+    func boatRace(input: String) -> Int {
+        let lines = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+        
+        let times = lines[0].removed(text: "Time:").trimmed.split(" ").filter { !$0.isEmpty }
+        let distance = lines[1].removed(text: "Distance:").trimmed.split(" ").filter { !$0.isEmpty }
+        
+        struct Race {
+            let time: Int
+            let distance: Int
+        }
+        let races = zip(times, distance).map { Race(time: $0.0.decimal!, distance: $0.1.decimal!) }
+        let result = races.map { race in
+            var counter = 0
+            for speed in 0..<race.time {
+                let distance = (race.time - speed) * speed
+                if distance > race.distance {
+                    counter.increment()
+                }
+            }
+            return counter
+        }.reduce(1, *)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }
