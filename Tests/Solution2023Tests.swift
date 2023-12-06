@@ -10,25 +10,27 @@ import XCTest
 
 final class Solution2023Tests: XCTestCase {
     let absolutePath = "/Users/tomaskuc/dev/AdventOfCode/puzzles/2023/"
-    func testInput(day: Int) -> String? {
+    func testInput(day: Int, suffix: String = "") -> String? {
         var dayNumber = "\(day)"
         if dayNumber.count == 1 {
             dayNumber = "0" + dayNumber
         }
-        return Resource.getInput(absolutePath: self.absolutePath + "day\(dayNumber)/test.txt")
+        return Resource.getInput(absolutePath: self.absolutePath + "day\(dayNumber)/test\(suffix).txt")
     }
 
-    func prodInput(day: Int) -> String? {
+    func prodInput(day: Int, suffix: String = "") -> String? {
         var dayNumber = "\(day)"
         if dayNumber.count == 1 {
             dayNumber = "0" + dayNumber
         }
-        return Resource.getInput(absolutePath: self.absolutePath + "day\(dayNumber)/input.txt")
+        return Resource.getInput(absolutePath: self.absolutePath + "day\(dayNumber)/input\(suffix).txt")
     }
 
     func test_day1() throws {
         let input = self.prodInput(day: 1) ?? ""
         let result1 = Solution2023().sumOfNumbers(input: input)
         XCTAssertEqual(result1, 55029)
+        let result2 = Solution2023().sumOfTextNumbers(input: input)
+        XCTAssertEqual(result2, 55686)
     }
 }
