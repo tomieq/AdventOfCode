@@ -406,4 +406,98 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    
+    // MARK: Day 7 - part 1
+    func camelCards(input: String) -> Int {
+        let lines = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+        struct Hand: CustomStringConvertible {
+            let cards: String
+            let bet: Int
+            
+            var description: String {
+                "cards: \(cards) bet: \(bet)"
+            }
+        }
+        let cardPowerOrder = "AKQJT98765432".array
+        var cardPowerMap: [String: Int] = [:]
+        cardPowerOrder.reversed().enumerated().forEach {
+            cardPowerMap[$0.element] = $0.offset
+        }
+        var hands = lines.map {
+            let data = $0.split(" ").tuple
+            return Hand(cards: data.0, bet: data.1.decimal!)
+        }
+
+        hands.sort { p, n in
+            let pStats = p.cards.letterStatistics.rawValues.sorted().reversed.filled(with: 0, toSize: 5)
+            let nStats = n.cards.letterStatistics.rawValues.sorted().reversed.filled(with: 0, toSize: 5)
+//            print("cards: \(p.cards) stats: \(pStats)")
+//            print("cards: \(n.cards) stats: \(nStats)")
+            if pStats == nStats {
+                let pPowers = p.cards.array.map { cardPowerMap[$0]! }
+                let nPowers = n.cards.array.map { cardPowerMap[$0]! }
+//                print("p cards: \(p.cards) stats: \(pPowers)")
+//                print("n cards: \(n.cards) stats: \(nPowers)")
+                return pPowers < nPowers
+            }
+            return pStats < nStats
+        }
+        print(hands)
+        
+        let result = hands.enumerated().map{ ($0.offset + 1) * $0.element.bet }.reduce(0, +)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+    
+    
+    
+    // MARK: Day 7 - part 1
+    func camelCards2(input: String) -> Int {
+        let lines = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+        struct Hand: CustomStringConvertible {
+            let cards: String
+            let bet: Int
+            
+            var description: String {
+                "cards: \(cards) bet: \(bet)"
+            }
+        }
+        let order = "AKQT98765432J".array
+        var power: [String: Int] = [:]
+        order.reversed().enumerated().forEach {
+            power[$0.element] = $0.offset
+        }
+        var hands = lines.map {
+            let data = $0.split(" ").tuple
+            return Hand(cards: data.0, bet: data.1.decimal!)
+        }
+
+        hands.sort { p, n in
+            let pJokers = p.cards.array.count { $0 == "J" }
+            let nJokers = n.cards.array.count { $0 == "J" }
+            var pStats = p.cards.removed(text: "J").letterStatistics.rawValues.sorted().reversed.filled(with: 0, toSize: 5)
+            var nStats = n.cards.removed(text: "J").letterStatistics.rawValues.sorted().reversed.filled(with: 0, toSize: 5)
+            pStats[0] += pJokers
+            nStats[0] += nJokers
+//            print("cards: \(p.cards) stats: \(pStats)")
+//            print("cards: \(n.cards) stats: \(nStats)")
+            if pStats == nStats {
+                let pPowers = p.cards.array.map { power[$0]! }
+                let nPowers = n.cards.array.map { power[$0]! }
+//                print("p cards: \(p.cards) stats: \(pPowers)")
+//                print("n cards: \(n.cards) stats: \(nPowers)")
+                return pPowers < nPowers
+            }
+            return pStats < nStats
+        }
+        print(hands)
+        
+        let result = hands.enumerated().map{ ($0.offset + 1) * $0.element.bet }.reduce(0, +)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }

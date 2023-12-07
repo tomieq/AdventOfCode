@@ -250,6 +250,10 @@ extension Array {
         self = Array(self.dropFirst(amount))
     }
 
+    func removedFirst(amount: Int) -> Array {
+        Array(self.dropFirst(amount))
+    }
+
     mutating func removeLast(amount: Int) {
         self = Array(self.dropLast(amount))
     }
@@ -274,5 +278,26 @@ extension Array {
     
     var quadruple: (Element, Element, Element, Element) {
         (self[0], self[1], self[2], self[3])
+    }
+}
+
+extension Array where Element: Comparable {
+    static public func <(lhs: Array<Element>, rhs: Array<Element>) -> Bool {
+          if lhs.count != rhs.count { return false }
+          for i in 0..<lhs.count {
+              if lhs[i] < rhs[i] { return true }
+              if lhs[i] > rhs[i] { return false }
+          }
+          return true
+     }
+}
+
+extension Array {
+    func filled(with element: Element, toSize size: Int) -> Self {
+        var copy = self
+        while copy.count < size {
+            copy.append(element)
+        }
+        return copy
     }
 }

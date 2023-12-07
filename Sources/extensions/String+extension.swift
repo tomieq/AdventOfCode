@@ -157,3 +157,13 @@ extension String {
         }
     }
 }
+
+extension String {
+    var countCharacterOccurences: Dictionary<String, Int> {
+        var occuranceDict: [String : Int] = [:]
+        for i in self {
+            occuranceDict[i.string, default: 0].increment()
+        }
+        return occuranceDict
+    }
+}

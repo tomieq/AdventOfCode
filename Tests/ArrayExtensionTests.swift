@@ -141,4 +141,16 @@ final class ArrayExtensionTests: XCTestCase {
         XCTAssertEqual(array.windowed(by: 3), [[1, 2, 3], [2, 3, 4], [3, 4, 5]])
         XCTAssertEqual(array.windowed(by: 3, offset: 2), [[1, 2, 3], [3, 4, 5]])
     }
+    
+    func test_comparingIntArray() {
+        var left: [Int] = [2]
+        var right: [Int] = [3]
+        XCTAssertTrue(left < right)
+        left = [2, 1]
+        right = [2, 2]
+        XCTAssertTrue(left < right)
+        left = [5, 8, 8]
+        right = [6, 1, 1]
+        XCTAssertTrue(left < right)
+    }
 }
