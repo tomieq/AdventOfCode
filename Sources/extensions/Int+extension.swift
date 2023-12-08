@@ -54,3 +54,25 @@ extension Int {
         self - 1
     }
 }
+
+extension Int {
+    func greatestCommonDivisor(with other: Int) -> Int {
+        var x = 0
+        // Finding maximum number
+        var y = Swift.max(self, other)
+        // Finding minimum number
+        var z = Swift.min(self, other)
+
+        while z != 0 {
+           x = y
+           y = z
+           z = x % y
+        }
+        return y
+    }
+
+    // the smallest common multiple between two or more numbers
+    func leastCommonMultiple(with other: Int) -> Int {
+        self * other / self.greatestCommonDivisor(with: other)
+    }
+}

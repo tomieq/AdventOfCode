@@ -451,9 +451,7 @@ class Solution2023 {
         return result
     }
     
-    
-    
-    // MARK: Day 7 - part 1
+    // MARK: Day 7 - part 2
     func camelCards2(input: String) -> Int {
         let lines = input.split("\n")
             .filter { !$0.isEmpty }
@@ -497,6 +495,68 @@ class Solution2023 {
         print(hands)
         
         let result = hands.enumerated().map{ ($0.offset + 1) * $0.element.bet }.reduce(0, +)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+    
+    // MARK: Day 8 - part 1
+    func crawlInstructions(input: String) -> Int {
+        
+        let ins = CircularVector(input.split("\n").first!.trimmed.array)
+//        print(ins)
+        var map: [String:[String:String]] = [:]
+        input.split("\n")
+            .removedFirst(amount: 1)
+            .filter { !$0.isEmpty }
+            .forEach {
+                let parts = $0.split(" = ")
+                let source = parts[0]
+                let (left, right) = parts[1].trimming("()").split(", ").tuple
+                map[source] = ["L": left, "R": right]
+            }
+        var result = 0
+        var node = "AAA"
+        while node != "ZZZ" {
+            result.increment()
+            node = map[node]![ins.next]!
+        }
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+    
+    // MARK: Day 8 - part 2
+    func crawlInstructions2(input: String) -> Int {
+        let initialInstructions = input.split("\n").first!.trimmed.array
+        
+        var map: [String:[String:String]] = [:]
+        input.split("\n")
+            .removedFirst(amount: 1)
+            .filter { !$0.isEmpty }
+            .forEach {
+                let parts = $0.split(" = ")
+                let source = parts[0]
+                let (left, right) = parts[1].trimming("()").split(", ").tuple
+                map[source] = ["L": left, "R": right]
+            }
+        let startingPoints = map.rawKeys.filter{ $0[2] == "A" }
+        
+        func countSteps(start: String) -> Int {
+            var point = start
+            var steps = 0
+            let ins = CircularVector(initialInstructions)
+            while point[2] != "Z" {
+                point = map[point]![ins.next]!
+                steps.increment()
+            }
+            return steps
+        }
+        var steps = startingPoints.map { countSteps(start: $0) }
+        print(steps)
+        
+        while steps.count > 1 {
+            steps = [steps[0].leastCommonMultiple(with: steps[1])] + steps.removedFirst(amount: 2)
+        }
+        let result = steps[0]
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }

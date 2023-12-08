@@ -65,4 +65,20 @@ final class Solution2023Tests: XCTestCase {
         let result2 = Solution2023().boatRace2(input: input)
         XCTAssertEqual(result2, 32607562)
     }
+    
+    func test_day7() throws {
+        let input = self.prodInput(day: 7) ?? ""
+        let result1 = Solution2023().camelCards(input: input)
+        XCTAssertEqual(result1, 251216224)
+        let result2 = Solution2023().camelCards2(input: input)
+        XCTAssertEqual(result2, 250825971)
+    }
+
+    func test_day8() throws {
+        let input = self.prodInput(day: 8) ?? ""
+        let result1 = Solution2023().crawlInstructions(input: input)
+        XCTAssertEqual(result1, 18157)
+        let result2 = Solution2023().crawlInstructions2(input: input)
+        XCTAssertEqual(result2, 14299763833181)
+    }
 }
