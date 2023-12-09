@@ -560,4 +560,81 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    
+    // MARK: Day 9 - part 1
+    func numberSequence(input: String) -> Int {
+        
+        func getDelta(_ input: [Int]) -> [Int] {
+            input.enumerated().compactMap { index, value in
+                guard let nextValue = input[safeIndex: index + 1] else {
+                    return nil
+                }
+                return nextValue - value
+            }
+        }
+        func isZeroed(_ input: [Int]) -> Bool {
+            input.count == input.count { $0 == 0 }
+        }
+
+        let result = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed.split(" ").compactMap{ $0.decimal } }
+            .map {
+                var container: [[Int]] = [$0]
+                while !isZeroed(container.last!) {
+                    container.append(getDelta(container.last!))
+                }
+                return container
+            }
+            .compactMap { line in
+                var rev = line.reversed
+                for (index, array) in rev.enumerated() {
+                    rev[index].append(rev[safeIndex: index - 1]?.last + array.last)
+                }
+                return rev.last
+            }.compactMap {
+                $0.last
+            }.reduce(0, +)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+
+    // MARK: Day 9 - part 2
+    func numberSequence2(input: String) -> Int {
+
+        func getDelta(_ input: [Int]) -> [Int] {
+            input.enumerated().compactMap { index, value in
+                guard let nextValue = input[safeIndex: index + 1] else {
+                    return nil
+                }
+                return nextValue - value
+            }
+        }
+        func isZeroed(_ input: [Int]) -> Bool {
+            input.count == input.count { $0 == 0 }
+        }
+
+        let result = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed.split(" ").compactMap{ $0.decimal } }
+            .map {
+                var container: [[Int]] = [$0]
+                while !isZeroed(container.last!) {
+                    container.append(getDelta(container.last!))
+                }
+                return container
+            }
+            .compactMap { line in
+                var rev = line.reversed
+                for (index, array) in rev.enumerated() {
+                    rev[index].prepend(array.first! - rev[safeIndex: index - 1]?.first)
+                }
+                return rev.last
+            }.compactMap {
+                $0.first
+            }.reduce(0, +)
+
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }
