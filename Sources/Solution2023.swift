@@ -661,9 +661,7 @@ class Solution2023 {
                     .map { (Point(x: $0.offset, y: i), $0.element) }
             }
         let start = coords.first { $0.1 == "S" }!.0
-        let pipes = coords.map {
-                ($0.0, directionMapping[$0.1] ?? [])
-            }
+        let pipes = coords.compactMap { TupleZip.make($0.0, directionMapping[$0.1]) }
             .reduce(into: [:]) { $0[$1.0] = $1.1 }
 
         func nextPoints(_ way: [Point]) -> [Point] {
@@ -675,7 +673,9 @@ class Solution2023 {
                 .map { $0.0 } ?? []
         }
         func move2Next(_ way: inout [Point]) {
-            return way.append(nextPoints(way).first)
+            let next = nextPoints(way).first
+            way.removeFirst()
+            way.append(next)
         }
         var ways = nextPoints([start]).map{ [start, $0] }.tuple
         var stepCounter = 1
@@ -684,7 +684,7 @@ class Solution2023 {
             move2Next(&ways.1)
             stepCounter.increment()
         }
-        
+
         let result = stepCounter
         Logger.v(self.logTag, "Result = \(result)")
         return result
