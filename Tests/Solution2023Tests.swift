@@ -89,4 +89,10 @@ final class Solution2023Tests: XCTestCase {
         let result2 = Solution2023().numberSequence2(input: input)
         XCTAssertEqual(result2, 971)
     }
+    
+    func test_day10() throws {
+        let input = self.prodInput(day: 10) ?? ""
+        let result1 = Solution2023().crawlingPipes(input: input)
+        XCTAssertEqual(result1, 6951)
+    }
 }

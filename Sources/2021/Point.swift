@@ -116,6 +116,10 @@ extension Point {
         points.append(self.move(.down).move(.right))
         return points
     }
+    
+    var allNeighbours: [Point] {
+        self.linearNeighbours + self.diagonalNeighbours
+    }
 }
 
 extension Point {

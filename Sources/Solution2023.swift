@@ -637,4 +637,56 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    
+    
+    // MARK: Day 10 - part 1
+    func crawlingPipes(input: String) -> Int {
+        
+        let directionMapping: [String: [MoveDirection]] = [
+            "|": [.up, .down],
+            "L": [.up, .right],
+            "-": [.right, .left],
+            "J": [.left, .up],
+            "7": [.left, .down],
+            "F": [.right, .down],
+            "S": MoveDirection.allCases
+        ]
+        let coords = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+            .enumerated()
+            .flatMap { i, v in
+                v.array.enumerated()
+                    .filter{ $0.element != "." }
+                    .map { (Point(x: $0.offset, y: i), $0.element) }
+            }
+        let start = coords.first { $0.1 == "S" }!.0
+        let pipes = coords.map {
+                ($0.0, directionMapping[$0.1] ?? [])
+            }
+            .reduce(into: [:]) { $0[$1.0] = $1.1 }
+
+        func nextPoints(_ way: [Point]) -> [Point] {
+            let point = way.last!
+            return pipes[point]?
+                .map { (point.move($0), $0) }
+                .filter { way.contains($0.0).not }
+                .filter { pipes[$0.0]?.contains($0.1.other) ?? false }
+                .map { $0.0 } ?? []
+        }
+        func move2Next(_ way: inout [Point]) {
+            return way.append(nextPoints(way).first)
+        }
+        var ways = nextPoints([start]).map{ [start, $0] }.tuple
+        var stepCounter = 1
+        while ways.0.contains(ways.1.last!).not {
+            move2Next(&ways.0)
+            move2Next(&ways.1)
+            stepCounter.increment()
+        }
+        
+        let result = stepCounter
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }
