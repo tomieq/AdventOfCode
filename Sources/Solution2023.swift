@@ -689,4 +689,81 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    // MARK: Day 11 - part 1
+    func spaceShortestWay(input: String) -> Int {
+
+        let galaxies = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+            .enumerated()
+            .flatMap { i, v in
+                v.array.enumerated()
+                    .filter{ $0.element != "." }
+                    .map { Point(x: $0.offset, y: i) }
+            }
+
+        let width = galaxies.map { $0.x }.max
+        let height = galaxies.map { $0.y }.max
+        let emptyRows = (0...height).filter{ y in galaxies.filter{ $0.y ==  y}.isEmpty }
+        let emptyColumns = (0...width).filter{ x in galaxies.filter{ $0.x ==  x}.isEmpty }
+        var expanded = galaxies
+        emptyColumns.reversed.forEach { x in
+            expanded = expanded.map {
+                $0.x > x ? $0.move(.right) : $0
+            }
+        }
+        emptyRows.reversed.forEach { y in
+            expanded = expanded.map {
+                $0.y > y ? $0.move(.down) : $0
+            }
+        }
+        let result = expanded
+            .combinations(ofCount: 2)
+            .map {
+                let start = $0[0]
+                let end = $0[1]
+                return abs(end.x - start.x) + abs(end.y - start.y)
+            }.reduce(0, +)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+    
+    // MARK: Day 11 - part 2
+    func spaceShortestWay2(input: String) -> Int {
+
+        let galaxies = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+            .enumerated()
+            .flatMap { i, v in
+                v.array.enumerated()
+                    .filter{ $0.element != "." }
+                    .map { Point(x: $0.offset, y: i) }
+            }
+        var width = galaxies.map { $0.x }.max
+        var height = galaxies.map { $0.y }.max
+
+        let emptyRows = (0...height).filter{ y in galaxies.filter{ $0.y ==  y}.isEmpty }
+        let emptyColumns = (0...width).filter{ x in galaxies.filter{ $0.x ==  x}.isEmpty }
+        var expanded = galaxies
+        emptyColumns.reversed.forEach { x in
+            expanded = expanded.map {
+                $0.x > x ? Point(x: $0.x + 1000000.decremented, y: $0.y) : $0
+            }
+        }
+        emptyRows.reversed.forEach { y in
+            expanded = expanded.map {
+                $0.y > y ? Point(x: $0.x, y: $0.y + 1000000.decremented) : $0
+            }
+        }
+        let result = expanded
+            .combinations(ofCount: 2)
+            .map {
+                let start = $0[0]
+                let end = $0[1]
+                return abs(end.x - start.x) + abs(end.y - start.y)
+            }.reduce(0, +)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }

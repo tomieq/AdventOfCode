@@ -95,4 +95,12 @@ final class Solution2023Tests: XCTestCase {
         let result1 = Solution2023().crawlingPipes(input: input)
         XCTAssertEqual(result1, 6951)
     }
+    
+    func test_day11() throws {
+        let input = self.prodInput(day: 11) ?? ""
+        let result1 = Solution2023().spaceShortestWay(input: input)
+        XCTAssertEqual(result1, 10228230)
+        let result2 = Solution2023().spaceShortestWay2(input: input)
+        XCTAssertEqual(result2, 447073334102)
+    }
 }
