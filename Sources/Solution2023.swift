@@ -740,8 +740,8 @@ class Solution2023 {
                     .filter{ $0.element != "." }
                     .map { Point(x: $0.offset, y: i) }
             }
-        var width = galaxies.map { $0.x }.max
-        var height = galaxies.map { $0.y }.max
+        let width = galaxies.map { $0.x }.max
+        let height = galaxies.map { $0.y }.max
 
         let emptyRows = (0...height).filter{ y in galaxies.filter{ $0.y ==  y}.isEmpty }
         let emptyColumns = (0...width).filter{ x in galaxies.filter{ $0.x ==  x}.isEmpty }
@@ -763,6 +763,86 @@ class Solution2023 {
                 let end = $0[1]
                 return abs(end.x - start.x) + abs(end.y - start.y)
             }.reduce(0, +)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+    
+    // MARK: Day 12 - part 1
+    func discoverArrangements(input: String) -> Int {
+
+        func hasCombinations(record: String, stat: Int) -> Bool {
+            if record.contains("?").not, record.count == stat {
+                return false
+            }
+            if (stat...stat + 1).contains(record.count), record.contains("#") {
+                return false
+            }
+            return true
+        }
+        
+        func getCombinations(_ record: String) -> [String] {
+            if record.contains("?") {
+                return getCombinations(record.replaced(onlyFirst: "?", with: ".")) + getCombinations(record.replaced(onlyFirst: "?", with: "#"))
+            }
+            return [record]
+        }
+        
+        func calculateStats(_ record: String) -> [Int] {
+            var result: [Int] = []
+            var partialResult = 0
+            for letter in record {
+                if letter == "#" {
+                    partialResult.increment()
+                } else if partialResult > 0 {
+                    result.append(partialResult)
+                    partialResult = 0
+                }
+            }
+            if partialResult > 0 {
+                result.append(partialResult)
+            }
+            return result
+        }
+        
+
+        let rows: [(String, [Int])] = input.split("\n")
+            .filter { !$0.isEmpty }
+            .map { $0.trimmed }
+            .map { $0.split(" ").tuple }
+            .map {
+                // remove multiple dots
+                let records = $0.0.split(".")
+                    .filter { !$0.isEmpty}
+                // map to [Int]
+                let stats = $0.1.split(",").compactMap { $0.decimal }
+                return (records, stats)
+            }
+            .map {
+                // remove known groups
+                var records = $0.0
+                var stats = $0.1
+                while let record = records.first, let stat = stats.first, !hasCombinations(record: record, stat: stat) {
+                    print("Removed \(record) with value: \(stat)")
+                    records.removeFirst()
+                    stats.removeFirst()
+                }
+                while let record = records.last, let stat = stats.last, !hasCombinations(record: record, stat: stat) {
+                    print("Removed \(record) with value: \(stat)")
+                    records.removeLast()
+                    stats.removeLast()
+                }
+                return (records, stats)
+            }
+            .map {
+                ($0.0.joined(separator: "."), $0.1)
+            }
+        
+        let combinationAmounts = rows.map { record, stats in
+                guard stats.isEmpty.not else { return 1 }
+            return getCombinations(record).count { calculateStats($0) == stats }
+            }
+        print(combinationAmounts)
+        let result = combinationAmounts.reduce(0, +)
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }

@@ -103,4 +103,10 @@ final class Solution2023Tests: XCTestCase {
         let result2 = Solution2023().spaceShortestWay2(input: input)
         XCTAssertEqual(result2, 447073334102)
     }
+    
+    func test_day12() throws {
+        let input = self.prodInput(day: 12) ?? ""
+        let result1 = Solution2023().discoverArrangements(input: input)
+        XCTAssertEqual(result1, 7440)
+    }
 }

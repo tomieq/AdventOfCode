@@ -167,3 +167,12 @@ extension String {
         return occuranceDict
     }
 }
+
+extension String {
+    func replaced(onlyFirst txt: String, with: String) -> String {
+        if let range = self.range(of: txt) {
+            return self.replacingCharacters(in: range, with: with)
+        }
+        return self
+    }
+}
