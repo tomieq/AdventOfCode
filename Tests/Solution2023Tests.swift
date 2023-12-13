@@ -114,5 +114,7 @@ final class Solution2023Tests: XCTestCase {
         let input = self.prodInput(day: 13) ?? ""
         let result1 = Solution2023().mirrorDetecting(input: input)
         XCTAssertEqual(result1, 30705)
+        let result2 = Solution2023().mirrorDetecting2(input: input)
+        XCTAssertEqual(result2, 44615)
     }
 }

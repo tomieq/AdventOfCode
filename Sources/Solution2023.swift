@@ -803,7 +803,6 @@ class Solution2023 {
             }
             return result
         }
-        
 
         let rows: [(String, [Int])] = input.split("\n")
             .filter { !$0.isEmpty }
@@ -839,9 +838,8 @@ class Solution2023 {
         
         let combinationAmounts = rows.map { record, stats in
                 guard stats.isEmpty.not else { return 1 }
-            return getCombinations(record).count { calculateStats($0) == stats }
+                return getCombinations(record).count { calculateStats($0) == stats }
             }
-        print(combinationAmounts)
         let result = combinationAmounts.reduce(0, +)
         Logger.v(self.logTag, "Result = \(result)")
         return result
@@ -880,6 +878,83 @@ class Solution2023 {
                 fatalError()
             }.reduce(0, +)
 
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+    
+    // MARK: Day 13 - part 2
+    func mirrorDetecting2(input: String) -> Int {
+
+        let groups = input.split("\n\n")
+
+        func findMirrors(_ array: [String]) -> [Int] {
+            var mirrors: [Int] = []
+            guard array.count > 1 else { return [] }
+            for i in 0..<array.count.decremented {
+                let left = array.subArray(0...i)
+                let right = array.subArray(i.incremented...min(i + left.count, array.count.decremented))
+                if left.last(amount: right.count) == right.reversed {
+                    mirrors.append(i.incremented)
+                }
+            }
+            return mirrors
+        }
+
+        func other(_ letter: String) -> String {
+            if letter == "#" { return "." }
+            return "#"
+        }
+
+        func smudgeVariations(_ array: [String]) -> [[String]] {
+            var result: [[String]] = []
+            for (rowIndex, row) in array.enumerated() {
+                for letterIndex in 0..<row.count {
+                    var modifiedRows = array
+                    var modifiedValue = modifiedRows[rowIndex].array
+                    modifiedValue[letterIndex] = other(modifiedValue[letterIndex])
+                    modifiedRows[rowIndex] = modifiedValue.joined()
+                    result.append(modifiedRows)
+                }
+            }
+            return result
+        }
+
+        typealias Datatype = [(rows: [String], cols: [String], rowMirror: Int?, colMirror: Int?)]
+        let data: Datatype = groups
+            .map {
+                let rows = $0.split("\n").filter { $0.isEmpty.not}
+                let columns = rows[0].enumerated().map { index, _ in
+                    rows.map { $0[index].string }.joined()
+                }
+                if let columnMirror = findMirrors(columns).first {
+                    return (rows, columns, nil, columnMirror)
+                }
+                if let rowMirror = findMirrors(rows).first {
+                    return (rows, columns, rowMirror, nil)
+                }
+                print(rows, columns)
+                fatalError()
+            }
+
+        let result = data.map {
+            let rowVariations = smudgeVariations($0.rows)
+            for variant in rowVariations {
+                var mirrors = findMirrors(variant)
+                mirrors.removeFirst(object: $0.rowMirror)
+                if mirrors.isEmpty.not {
+                    return mirrors.first! * 100
+                }
+            }
+            let colVariations = smudgeVariations($0.cols)
+            for variant in colVariations {
+                var mirrors = findMirrors(variant)
+                mirrors.removeFirst(object: $0.colMirror)
+                if mirrors.isEmpty.not {
+                    return mirrors.first!
+                }
+            }
+            fatalError()
+        }.reduce(0, +)
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
