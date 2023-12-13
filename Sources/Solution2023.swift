@@ -846,4 +846,41 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+    
+    // MARK: Day 13 - part 1
+    func mirrorDetecting(input: String) -> Int {
+
+        let groups = input.split("\n\n")
+
+        func findMirror<T: Equatable>(_ array: [T]) -> Int? {
+            guard array.count > 1 else { return nil }
+            for i in 0..<array.count.decremented {
+                let left = array.subArray(0...i)
+                let right = array.subArray(i.incremented...min(i + left.count, array.count.decremented))
+                if left.last(amount: right.count) == right.reversed {
+                    return i.incremented
+                }
+            }
+            return nil
+        }
+        
+        let result = groups
+            .map {
+                let rows = $0.split("\n").filter { $0.isEmpty.not}
+                let columns = rows[0].enumerated().map { index, _ in
+                    rows.map { $0[index].string }.joined()
+                }
+                if let columnMirror = findMirror(columns) {
+                    return columnMirror
+                }
+                if let rowMirror = findMirror(rows) {
+                    return rowMirror * 100
+                }
+                print(rows, columns)
+                fatalError()
+            }.reduce(0, +)
+
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }

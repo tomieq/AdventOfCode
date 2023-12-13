@@ -109,4 +109,10 @@ final class Solution2023Tests: XCTestCase {
         let result1 = Solution2023().discoverArrangements(input: input)
         XCTAssertEqual(result1, 7440)
     }
+    
+    func test_day13() throws {
+        let input = self.prodInput(day: 13) ?? ""
+        let result1 = Solution2023().mirrorDetecting(input: input)
+        XCTAssertEqual(result1, 30705)
+    }
 }
