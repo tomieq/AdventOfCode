@@ -117,4 +117,10 @@ final class Solution2023Tests: XCTestCase {
         let result2 = Solution2023().mirrorDetecting2(input: input)
         XCTAssertEqual(result2, 44615)
     }
+    
+    func test_day14() throws {
+        let input = self.prodInput(day: 14) ?? ""
+        let result1 = Solution2023().tetris(input: input)
+        XCTAssertEqual(result1, 110090)
+    }
 }

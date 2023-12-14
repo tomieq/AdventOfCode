@@ -958,4 +958,40 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+
+    // MARK: Day 14 - part 1
+    func tetris(input: String) -> Int {
+        func moveRock(_ input: String) -> [String] {
+            var line = input.array.reversed
+            func nextRockIndex(from i: Int) -> Int? {
+                for r in i.incremented..<line.count {
+                    if line[r] == "O" { return r }
+                    if line[r] == "#" { return nil }
+                }
+                return nil
+            }
+            for i in 0..<line.count {
+                if line[i] == ".", let nextRock = nextRockIndex(from: i) {
+                    line[i] = "O"
+                    line[nextRock] = "."
+                }
+            }
+            return line.reversed
+        }
+
+        let rows = input.split("\n").filter { $0.isEmpty.not}
+        let result = rows[0].enumerated()
+            .map { index, _ in
+                rows.map { $0[index].string }.reversed.joined()
+            }
+            .map { moveRock($0) }
+            .map {
+                $0.enumerated().map { i, v in
+                    v == "O" ? i.incremented : 0
+                }.reduce(0, +)
+            }.reduce(0, +)
+
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }
