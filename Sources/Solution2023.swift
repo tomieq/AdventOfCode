@@ -994,4 +994,22 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+
+    // MARK: Day 15 - part 1
+    func stringHash(input: String) -> Int {
+        let strings = input.split("\n").first?.split(",") ?? []
+        let hashes = strings.map { $0.array.map{ $0.ascii } }
+            .map {
+                var hash = 0
+                for code in $0 {
+                    hash += code
+                    hash *= 17
+                    hash %= 256
+                }
+                return hash
+            }
+        let result = hashes.reduce(0, +)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }
