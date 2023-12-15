@@ -1012,4 +1012,61 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
+
+    // MARK: Day 15 - part 2
+    func stringHash2(input: String) -> Int {
+        func hash(_ input: [String]) -> Int {
+            var hash = 0
+            for code in input {
+                hash += code.ascii
+                hash *= 17
+                hash %= 256
+            }
+            return hash
+        }
+        class Lens {
+            let label: String
+            var focal: Int
+
+            init(label: String, focal: Int) {
+                self.label = label
+                self.focal = focal
+            }
+        }
+        var boxes: [Int: [Lens]] = [:]
+
+        let strings = input.split("\n").first?.split(",") ?? []
+        strings.forEach {
+                let operation = $0.contains("=") ? "=" : "-"
+                let parts = $0.split(operation)
+                let label = parts[0]
+                let boxNo = hash(label.array)
+                switch operation {
+                case "=":
+                    let focalLength = parts[1].decimal!
+                    if (boxes[boxNo, default: []].contains { $0.label == label }) {
+                        boxes[boxNo, default: []].filter { $0.label == label } . forEach {
+                            $0.focal = focalLength
+                        }
+                    } else {
+                        boxes[boxNo, default: []].append(Lens(label: label, focal: focalLength))
+                    }
+                case "-":
+                    boxes[boxNo, default: []].removeAll { $0.label == label }
+                default:
+                    fatalError()
+                }
+            }
+        let values = boxes.filter{ $0.value.isEmpty.not }.map { box in
+            (box.key, box.value.map { ($0.focal)})
+        }
+        .flatMap { boxNo, focals in
+            focals.enumerated().map {
+                $0.offset.incremented * $0.element * boxNo.incremented
+            }
+        }
+        let result = values.reduce(0, +)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
 }
