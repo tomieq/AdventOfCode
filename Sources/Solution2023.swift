@@ -11,7 +11,7 @@ import Foundation
 
 class Solution2023 {
     private let logTag = "Solution2023"
-
+/*
     // MARK: Day 1 - part 1
     func sumOfNumbers(input: String) -> Int {
         let result = input.split("\n")
@@ -1012,7 +1012,7 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
-
+    
     // MARK: Day 15 - part 2
     func stringHash2(input: String) -> Int {
         func hash(_ input: [String]) -> Int {
@@ -1066,6 +1066,160 @@ class Solution2023 {
             }
         }
         let result = values.reduce(0, +)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+    */
+    // MARK: Day 16 - part §
+    func lightBeamWithMirrors(input: String) -> Int {
+
+        var map: [Point: String] = [:]
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+        for (y, line) in lines.enumerated() {
+            for (x, value) in line.array.enumerated() {
+                map[Point(x: x, y: y)] = value
+            }
+        }
+        struct Beam: Equatable, CustomStringConvertible {
+            let from: MoveDirection
+            let point: Point
+            
+            var description: String {
+                "from: \(from) at \(point)"
+            }
+        }
+        func next(beam: Beam) -> [Beam] {
+            guard let mapValue = map[beam.point] else { return [] }
+            if mapValue == "." { return [Beam(from: beam.from, point: beam.point.move(beam.from.other))] }
+            switch beam.from {
+            case .right:
+                switch mapValue {
+                case "/": return [Beam(from: .up, point: beam.point.move(.down))]
+                case "\\": return [Beam(from: .down, point: beam.point.move(.up))]
+                case "-": return [Beam(from: .right, point: beam.point.move(.left))]
+                case "|": return [Beam(from: .down, point: beam.point.move(.up)),
+                                  Beam(from: .up, point: beam.point.move(.down))]
+                default: fatalError()
+                }
+            case .left:
+                switch mapValue {
+                case "/": return [Beam(from: .down, point: beam.point.move(.up))]
+                case "\\": return [Beam(from: .up, point: beam.point.move(.down))]
+                case "-": return [Beam(from: .left, point: beam.point.move(.right))]
+                case "|": return [Beam(from: .down, point: beam.point.move(.up)),
+                                  Beam(from: .up, point: beam.point.move(.down))]
+                default: fatalError()
+                }
+            case .up:
+                switch mapValue {
+                case "/": return [Beam(from: .right, point: beam.point.move(.left))]
+                case "\\": return [Beam(from: .left, point: beam.point.move(.right))]
+                case "-": return [Beam(from: .left, point: beam.point.move(.right)),
+                                  Beam(from: .right, point: beam.point.move(.left))]
+                case "|": return [Beam(from: .up, point: beam.point.move(.down))]
+                default: fatalError()
+                }
+            case .down:
+                switch mapValue {
+                case "/": return [Beam(from: .left, point: beam.point.move(.right))]
+                case "\\": return [Beam(from: .right, point: beam.point.move(.left))]
+                case "-": return [Beam(from: .left, point: beam.point.move(.right)),
+                                  Beam(from: .right, point: beam.point.move(.left))]
+                case "|": return [Beam(from: .down, point: beam.point.move(.up))]
+                default: fatalError()
+                }
+            }
+        }
+        let maxX = map.rawKeys.map { $0.x }.max()!
+        let maxY = map.rawKeys.map { $0.y }.max()!
+        let start = Beam(from: .left, point: Point(x: 0, y: 0))
+        var analized: [Beam] = [start]
+        var beams = next(beam: start)
+
+        while beams.isEmpty.not {
+            let copy = beams
+            beams = []
+            for beam in copy {
+                let nextPoints = next(beam: beam)
+                    .filter{ (0...maxX).contains($0.point.x) && (0...maxY).contains($0.point.y) }
+                    .filter { analized.contains($0).not }
+                beams.append(contentsOf: nextPoints)
+                analized.append(contentsOf: nextPoints)
+            }
+        }
+        
+        let result = analized.map{ $0.point }.unique.count
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+    
+    
+    // MARK: Day 18 - part 1
+    func diggingHole(input: String) -> Int {
+        
+        func contains(polygon: [Point], test: Point) -> Bool {
+
+          var pJ=polygon.last!
+          var contains = false
+          for pI in polygon {
+            if ( ((pI.y >= test.y) != (pJ.y >= test.y)) &&
+            (test.x <= (pJ.x - pI.x) * (test.y - pI.y) / (pJ.y - pI.y) + pI.x) ){
+                  contains = !contains
+            }
+            pJ=pI
+          }
+          return contains
+        }        
+        func letter2direction(_ letter: String) -> MoveDirection {
+            switch letter {
+            case "R": return .right
+            case "L": return .left
+            case "U": return .up
+            case "D": return .down
+            default: fatalError()
+            }
+        }
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+            .map { $0.split(" ").tuple }
+        var currentPoint = Point(x: 0, y: 0)
+        var edgePoints: [Point] = []
+        var polygonPoints: [Point] = [currentPoint]
+        lines.forEach { (letter, distance) in
+            var nextPoint = currentPoint
+            let direction = letter2direction(letter)
+            (0..<distance.decimal!).forEach { _ in
+                nextPoint = nextPoint.move(direction)
+                edgePoints.append(nextPoint)
+            }
+            
+            if polygonPoints.contains(nextPoint) {
+                print("ups... adding again \(nextPoint)")
+            } else {
+                polygonPoints.append(nextPoint)
+            }
+            currentPoint = nextPoint
+        }
+        let poly = Polygon(points: polygonPoints)
+        var filled: [Point] = edgePoints
+        for y in (0...polygonPoints.map{ $0.y }.max()) {
+            for x in (0...polygonPoints.map{ $0.x }.max()) where
+//            contains(polygon: polygonPoints, test: Point(x: x, y: y))
+            poly.contains(point: Point(x: x, y: y))
+            {
+                filled.append(Point(x: x, y: y))
+            }
+        }
+        
+//        for y in (0...polygonPoints.map{ $0.y }.max()) {
+//            var line = ""
+//            for x in (0...polygonPoints.map{ $0.x }.max()) {
+//                line.append(filled.contains(Point(x: x, y: y)) ? "#" : ".")
+//            }
+//            print(line)
+//        }
+//        print(contains(polygon: map, test: Point(x: 1, y: 3)))
+        print(poly.contains(point: Point(x: 1, y: 3)))
+        let result = filled.unique.count
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }

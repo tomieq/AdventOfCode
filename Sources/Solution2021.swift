@@ -5,16 +5,20 @@
 //  Created by Tomasz on 29/11/2022.
 //
 
+// group folding: Shift + option + command + left/right arrow
+
 import Foundation
 
 class Solution2021 {
     private let logTag = "Solution2021"
 
     // MARK: Day 1 - part 1
-    func sonarSweepDepthMeasurement(input: String) {
-        let numbers = input.split("\n").filter { !$0.isEmpty }.compactMap { $0.decimal }
-        var result = 0
+    func amountOfIncreasedNumber(input: String) -> Int {
+        let numbers = input.split("\n")
+            .filter { !$0.isEmpty }
+            .compactMap { $0.decimal }
 
+        var result = 0
         var previousNumber: Int?
         for number in numbers {
             guard let previous = previousNumber else {
@@ -27,21 +31,19 @@ class Solution2021 {
             previousNumber = number
         }
         Logger.v(self.logTag, "Result = \(result)")
+        return result
     }
 
     // MARK: Day 1 - part 2
-    func sonarSweepDepthMeasurementSmoothing(input: String) {
-        let numbers = input.split("\n").filter { !$0.isEmpty }.compactMap { $0.decimal }
+    func amountOfIncreasedNumbersWindowed(input: String) -> Int {
+        let numbers = input.split("\n")
+            .filter { !$0.isEmpty }
+            .compactMap { $0.decimal }
 
-        var windowedNumbers: [Int] = []
-        for (index, number) in numbers.enumerated() {
-            guard let second = numbers[safeIndex: index + 1],
-                  let third = numbers[safeIndex: index + 2] else {
-                continue
-            }
-            windowedNumbers.append(number + second + third)
-        }
-        Logger.v(self.logTag, "Windowed numbers = \(windowedNumbers)")
+        let windowedNumbers = numbers
+            .windowed(by: 3)
+            .map { $0.reduce(0, +) }
+
         var result = 0
 
         var previousNumber: Int?
@@ -56,52 +58,54 @@ class Solution2021 {
             previousNumber = number
         }
         Logger.v(self.logTag, "Result = \(result)")
+        return result
     }
 
     // MARK: Day 2 - part 1
-    func diveHorizontanPosition(input: String) {
+    func travelling2dMap(input: String) -> Int {
         let lines = input.split("\n")
-        var horizontalPosition = 0
-        var depth = 0
+        var x = 0
+        var y = 0
 
         for line in lines {
             let parts = line.split(" ")
-            guard let command = parts[safeIndex: 0], let value = parts[safeIndex: 1]?.decimal else {
+            guard let command = parts[safeIndex: 0],
+                  let value = parts[safeIndex: 1]?.decimal else {
                 continue
             }
             switch command {
             case "forward":
-                horizontalPosition += value
+                x += value
             case "down":
-                depth += value
+                y += value
             case "up":
-                depth -= value
+                y -= value
             default:
                 Logger.e(self.logTag, "Invalid command \(command)")
             }
         }
-
-        let result = horizontalPosition * depth
-
+        let result = x * y
         Logger.v(self.logTag, "Result = \(result)")
+        return result
     }
 
     // MARK: Day 2 - part 2
-    func diveHorizontanPositionAndAim(input: String) {
+    func travelling2dMap2(input: String) -> Int {
         let lines = input.split("\n").filter { !$0.isEmpty }
-        var horizontalPosition = 0
-        var depth = 0
+        var x = 0
+        var y = 0
         var aim = 0
 
         for line in lines {
             let parts = line.split(" ")
-            guard let command = parts[safeIndex: 0], let value = parts[safeIndex: 1]?.decimal else {
+            guard let command = parts[safeIndex: 0],
+                  let value = parts[safeIndex: 1]?.decimal else {
                 continue
             }
             switch command {
             case "forward":
-                horizontalPosition += value
-                depth += aim * value
+                x += value
+                y += aim * value
             case "down":
                 aim += value
             case "up":
@@ -110,16 +114,16 @@ class Solution2021 {
                 Logger.e(self.logTag, "Invalid command \(command)")
             }
         }
-
-        let result = horizontalPosition * depth
-
+        let result = x * y
         Logger.v(self.logTag, "Result = \(result)")
+        return result
     }
 
     // MARK: Day 3 - part 1
-    func binaryDiagnosticGammaAndOxygen(input: String) {
+    func mostCommonBitCounter(input: String) -> Int? {
         let lines = input.split("\n").filter { !$0.isEmpty }
         let numberAmount = lines.count
+        let half = numberAmount / 2
 
         // counter keeping a number of ones per position
         var oneCounter: [Int: Int] = [:]
@@ -134,7 +138,7 @@ class Solution2021 {
         var epsilonRate = ""
 
         for index in 0..<oneCounter.keys.count {
-            if oneCounter[index, default: 0] > numberAmount / 2 {
+            if oneCounter[index, default: 0] > half {
                 gammaRate.append("1")
                 epsilonRate.append("0")
             } else {
@@ -142,18 +146,14 @@ class Solution2021 {
                 epsilonRate.append("1")
             }
         }
-        Logger.v(self.logTag, "oneCounter: \(oneCounter)")
-        Logger.v(self.logTag, "gammaRate: \(gammaRate) \(gammaRate.binary.readable)")
-        Logger.v(self.logTag, "epsilonRate: \(epsilonRate) \(epsilonRate.binary.readable)")
         let result = (gammaRate.binary ?? 0) * (epsilonRate.binary ?? 0)
-
         Logger.v(self.logTag, "Result: \(result)")
+        return result
     }
 
     // MARK: Day 3 - part 2
-    func binaryDiagnosticOxygenAndCO2Scrubber(input: String) {
+    func bitFiltering(input: String) -> Int {
         let numbers = input.split("\n").filter { !$0.isEmpty }
-
         var oxygens = numbers
 
         let numberOfDigitsPerLine = numbers[0].count
@@ -172,7 +172,7 @@ class Solution2021 {
             for number in oxygens {
                 if number[position].string != mostCommon {
                     if oxygens.count > 1 {
-                        oxygens.remove(object: number)
+                        oxygens.removeFirst(object: number)
                     }
                 }
             }
@@ -193,16 +193,15 @@ class Solution2021 {
             for number in scrubbers {
                 if number[position].string == mostCommon {
                     if scrubbers.count > 1 {
-                        scrubbers.remove(object: number)
+                        scrubbers.removeFirst(object: number)
                     }
                 }
             }
             position.increment()
         }
-
         let result = (oxygens.first?.binary ?? 0) * (scrubbers.first?.binary ?? 0)
-
         Logger.v(self.logTag, "Result: \(result)")
+        return result
     }
 
     // MARK: Day 4 - part 1
@@ -265,7 +264,7 @@ class Solution2021 {
                 if bingoCard.didWin {
                     let sumOfUnmarked = bingoCard.unmarkedNumbers.reduce(0, +)
                     result = sumOfUnmarked * number
-                    bingoCards.remove(object: bingoCard)
+                    bingoCards.removeFirst(object: bingoCard)
                     continue
                 }
             }
@@ -489,8 +488,8 @@ class Solution2021 {
             segmentMapping["d"] = digit2mixedSegment[4] - digit2mixedSegment[1] - segmentMapping["b"]
             digit2mixedSegment[0] = digit2mixedSegment[8] - segmentMapping["d"]
             var sixSegments = patterns.filter{ $0.count == 6 }
-            sixSegments.remove(object: digit2mixedSegment[0])
-            sixSegments.remove(object: digit2mixedSegment[9])
+            sixSegments.removeFirst(object: digit2mixedSegment[0])
+            sixSegments.removeFirst(object: digit2mixedSegment[9])
             digit2mixedSegment[6] = sixSegments.first
             segmentMapping["c"] = digit2mixedSegment[3] - digit2mixedSegment[6]
             digit2mixedSegment[2] = "acdeg".array.compactMap{ segmentMapping[$0] }.reduce("", +).sorted
@@ -812,7 +811,7 @@ class Solution2021 {
         Logger.v(self.logTag, "Result: \(readyPaths.count)")
     }
 
-    // MARK: Day 12 - part 1
+    // MARK: Day 12 - part 2
     func nodeWalkingTwice(input: String) {
         let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
 
@@ -869,5 +868,372 @@ class Solution2021 {
 
         addNode(path: ["start"])
         Logger.v(self.logTag, "Result: \(readyPaths.count)")
+    }
+
+    // MARK: Day 13 - part 1
+    func foldingPaper(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        var dots: [Point: Bool] = [:]
+        var instructions: [(side: String, index: Int)] = []
+
+        for line in lines {
+            if line.starts(with: "fold") {
+                let parts = line.split(" ")
+                let data = parts[2].split("=")
+                instructions.append((data[0], data[1].decimal!))
+            } else {
+                let parts = line.split(",")
+                let x = parts[0].decimal
+                let y = parts[1].decimal
+                dots[Point(x: x!, y: y!)] = true
+            }
+        }
+
+        let maxX = dots.map{ $0.key.x }.max!
+        let maxY = dots.map{ $0.key.y }.max!
+        func printDots() {
+            var output = "\n"
+            for y in 0...maxY {
+                for x in 0...maxX {
+                    dots[Point(x: x, y: y)].isNil ? output.append(".") : output.append("#")
+                }
+                output.append("\n")
+            }
+            output.append("\n")
+            print(output)
+        }
+        //printDots()
+        if let instruction = instructions.first {
+            switch instruction.side {
+            case "x":
+                // fold left
+                let foldLine = instruction.index + 1
+                var distance = -1
+                for x in foldLine...maxX {
+                    for y in 0...maxY {
+                        if dots[Point(x: x, y: y)] == true {
+                            dots[Point(x: x, y: y)] = nil
+                            dots[Point(x: x + distance * 2, y: y)] = true
+                        }
+                    }
+                    distance.decrement()
+                }
+            case "y":
+                // fold up
+                let foldLine = instruction.index + 1
+                var distance = -1
+                for y in foldLine...maxY {
+                    for x in 0...maxX {
+                        if dots[Point(x: x, y: y)] == true {
+                            dots[Point(x: x, y: y)] = nil
+                            dots[Point(x: x, y: y + distance * 2)] = true
+                        }
+                    }
+                    distance.decrement()
+                }
+            default:
+                break
+            }
+        }
+        //printDots()
+        let result = dots.map{ $0.value }.filter{ $0 }.count
+        Logger.v(self.logTag, "Result: \(result)")
+    }
+
+    // MARK: Day 13 - part 2
+    func foldingPaperMultipleTimes(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        var dots: [Point: Bool] = [:]
+        var instructions: [(side: String, index: Int)] = []
+        for line in lines {
+            if line.starts(with: "fold") {
+                let parts = line.split(" ")
+                let data = parts[2].split("=")
+                instructions.append((data[0], data[1].decimal!))
+            } else {
+                let parts = line.split(",")
+                let x = parts[0].decimal
+                let y = parts[1].decimal
+                dots[Point(x: x!, y: y!)] = true
+            }
+        }
+
+        func printDots() {
+            var output = "\n"
+            let maxX = dots.map{ $0.key.x }.max!
+            let maxY = dots.map{ $0.key.y }.max!
+            for y in 0...maxY {
+                for x in 0...maxX {
+                    dots[Point(x: x, y: y)].isNil ? output.append(".") : output.append("#")
+                }
+                output.append("\n")
+            }
+            output.append("\n")
+            print(output)
+        }
+//        printDots()
+        while !instructions.isEmpty {
+            let instruction = instructions.removeFirst()
+            let maxX = dots.map{ $0.key.x }.max!
+            let maxY = dots.map{ $0.key.y }.max!
+            switch instruction.side {
+            case "x":
+                // fold left
+                let foldLine = instruction.index + 1
+                var distance = -1
+                for x in foldLine...maxX {
+                    for y in 0...maxY {
+                        if dots[Point(x: x, y: y)] == true {
+                            dots[Point(x: x, y: y)] = nil
+                            dots[Point(x: x + distance * 2, y: y)] = true
+                        }
+                    }
+                    distance.decrement()
+                }
+            case "y":
+                // fold up
+                let foldLine = instruction.index + 1
+                var distance = -1
+                for y in foldLine...maxY {
+                    for x in 0...maxX {
+                        if dots[Point(x: x, y: y)] == true {
+                            dots[Point(x: x, y: y)] = nil
+                            dots[Point(x: x, y: y + distance * 2)] = true
+                        }
+                    }
+                    distance.decrement()
+                }
+            default:
+                break
+            }
+        }
+        printDots()
+        let result = dots.map{ $0.value }.filter{ $0 }.count
+        Logger.v(self.logTag, "Result: \(result)")
+    }
+
+    // MARK: Day 14 - part 1
+    func chemicalFormuae(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        var replacement: [String: String] = [:]
+        var formula = lines[0]
+        for line in lines[1...] {
+            let parts = line.split(" -> ")
+            replacement[parts[0]] = parts[1]
+        }
+
+        for _ in 1...10 {
+            var cut: [String] = []
+            for index in 0..<formula.count.decremented {
+                let elem = formula.subString(index, index + 2)
+                if let glue = replacement[elem] {
+                    cut.append("\(elem[0])\(glue)")
+                } else {
+                    cut.append(elem[0])
+                }
+            }
+            cut.append(formula.last)
+            formula = cut.joined()
+        }
+        let elems = formula.array.unique
+        var stats: [Int] = []
+        for elem in elems {
+            stats += formula.array.count{ $0 == elem }
+        }
+        let result = stats.max! - stats.min!
+        Logger.v(self.logTag, "Result: \(result)")
+    }
+
+    // MARK: Day 14 - part 2
+    func chemicalFormuaeLong(input: String) {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        var replacement: [String: String] = [:]
+        let formula = lines[0]
+        for line in lines[1...] {
+            let parts = line.split(" -> ")
+            replacement[parts[0]] = parts[1]
+        }
+
+        var pairStats: [String: Int] = [:]
+        for index in 0..<formula.count.decremented {
+            let elem = formula.subString(index, index + 2)
+            pairStats[elem, default: 0].increment()
+        }
+        let steps = 40
+        for _ in 1..<steps {
+            var newStats: [String: Int] = [:]
+            for (elem, amount) in pairStats {
+                if let glue = replacement[elem] {
+                    let pair1 = elem[0].string + glue
+                    let pair2 = glue + elem[1].string
+                    newStats[pair1, default: 0] += amount
+                    newStats[pair2, default: 0] += amount
+//                    print("Pair \(elem) will be replaced to \(pair1) and \(pair2)")
+                } else {
+                    newStats[elem] = amount
+                }
+            }
+            pairStats = newStats
+        }
+        // gather final stats dropping overlapping letters
+        var newStats: [String: Int] = [:]
+        for (elem, amount) in pairStats {
+            if let glue = replacement[elem] {
+                let pair1 = elem[0].string + glue
+                newStats[pair1, default: 0] += amount
+            } else {
+                newStats[elem] = amount
+            }
+        }
+        pairStats = newStats
+        var stats: [String: Int] = [:]
+        for (pair, amount) in pairStats {
+            stats[pair[0].string, default: 0] += amount
+            stats[pair[1].string, default: 0] += amount
+        }
+        stats[formula.last!.string, default: 0].increment()
+        let result = stats.rawValues.max! - stats.rawValues.min!
+        Logger.v(self.logTag, "Result: \(result)")
+    }
+
+    // MARK: Day 15 - part 1
+    func shortestWay(input: String) -> Int? {
+        let lines = input.split("\n")
+            .filter{ !$0.isEmpty }
+            .map { $0.trimming(" ") }
+
+        var riskMap: [Point: Int] = [:]
+        let size = lines[0].count - 1
+
+        let navi = AdjacencyList<Point>()
+        for (y, line) in lines.enumerated() {
+            for (x, risk) in line.array.enumerated() {
+                let point = Point(x: x, y: y)
+                riskMap[point] = risk.decimal
+            }
+        }
+        for point in riskMap.rawKeys {
+            for direction in MoveDirection.allCases {
+                let destination = point.move(direction)
+                if let risk = riskMap[destination] {
+                    navi.add(.directed, from: navi.createVertex(data: point), to: navi.createVertex(data: destination), weight: risk)
+                }
+            }
+        }
+        let start = navi.createVertex(data: Point(x: 0, y: 0))
+        let end = navi.createVertex(data: Point(x: size, y: size))
+        let edges = navi.dijkstra(from: start, to: end)
+
+        let result = edges?.map{ riskMap[$0.destination.data] }.reduce(0, +)
+//        edges?.forEach{ print("\($0.destination.data) \(riskMap[$0.destination.data].readable)" ) }
+        Logger.v(self.logTag, "Result: \(result.readable)")
+        return result
+    }
+
+    // MARK: Day 15 - part 1
+    func shortestWayBiggerMap(input: String) -> Int? {
+        let lines = input.split("\n")
+            .filter{ !$0.isEmpty }
+            .map { $0.trimming(" ") }
+
+        var riskMap: [Point: Int] = [:]
+        let size = lines[0].count
+
+        let navi = AdjacencyList<Point>()
+        for (y, line) in lines.enumerated() {
+            for (x, risk) in line.array.enumerated() {
+                let point = Point(x: x, y: y)
+                riskMap[point] = risk.decimal
+            }
+        }
+        print("size = \(riskMap.count)")
+        func next(_ risk: Int?) -> Int? {
+            let nextRisk = risk?.incremented
+            if nextRisk > 9 {
+                return 1
+            }
+            return nextRisk
+        }
+
+        for segment in 0..<4 {
+            for y in 0..<size {
+                for x in 0..<size {
+                    let offset = segment * size
+                    let sourcePoint = Point(x: x + offset, y: y)
+                    let destinationPoint = Point(x: x + size + offset, y: y)
+                    let destinationValue = next(riskMap[sourcePoint])
+                    riskMap[destinationPoint] = destinationValue
+                }
+            }
+        }
+
+        for s in 0...4 {
+            for segment in 0..<4 {
+                for y in 0..<size {
+                    for x in 0..<size {
+                        let offset = segment * size
+                        let sourcePoint = Point(x: x + s * size, y: y + offset)
+                        let destinationPoint = Point(x: x + s * size, y: y + size + offset)
+                        let destinationValue = next(riskMap[sourcePoint])
+                        riskMap[destinationPoint] = destinationValue
+                    }
+                }
+            }
+        }
+
+        print("size = \(riskMap.count)")
+//        for y in 0..<100 {
+//            var row: [Int] = []
+//            for x in 0..<100 {
+//                row.append(riskMap[Point(x: x, y: y)])
+//            }
+//            let line = row.chunked(by: 10).map{ $0.map{ "\($0)"}.joined()}
+//                .joined(separator: " ")
+//            print("line: \(line)")
+//            if (y + 1)  % 10 == 0, y > 1 {
+//                print(" ")
+//            }
+//        }
+
+        let directions: [MoveDirection] = [.down, .right]
+        for point in riskMap.rawKeys {
+            for direction in directions {
+                let destination = point.move(direction)
+                if let risk = riskMap[destination] {
+                    navi.add(.directed, from: navi.createVertex(data: point), to: navi.createVertex(data: destination), weight: risk)
+                }
+            }
+        }
+        let start = navi.createVertex(data: Point(x: 0, y: 0))
+        let end = navi.createVertex(data: Point(x: riskMap.rawKeys.map{ $0.x }.max!, y: riskMap.rawKeys.map{ $0.y }.max!))
+        let edges = navi.dijkstra(from: start, to: end)
+
+        let result = edges?.map{ riskMap[$0.destination.data] }.reduce(0, +)
+//        edges?.forEach{ print("\($0.destination.data) \(riskMap[$0.destination.data].readable)" ) }
+        Logger.v(self.logTag, "Result: \(result.readable)")
+        return result
+    }
+
+    // MARK: Day 16 - part 1
+    func day16(input: String) -> Int? {
+        let lines = input.split("\n").filter{ !$0.isEmpty }.map { $0.trimming(" ") }
+
+        let hexCode = lines[0]
+        var binaryCode = ""
+        for hex in hexCode.array {
+            binaryCode.append(hex.hex?.binary)
+        }
+
+        let packetVersion = binaryCode.subString(0, 3).binary
+        let typeID = binaryCode.subString(3, 5).decimal
+        binaryCode.removeFirst(6)
+
+        let result: Int? = 0
+        Logger.v(self.logTag, "Result: \(result.readable)")
+        return result
     }
 }

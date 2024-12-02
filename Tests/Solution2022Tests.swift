@@ -129,4 +129,9 @@ final class Solution2022Tests: XCTestCase {
         let result2 = Solution2022().sensorBeaconRange2(input: input)
         XCTAssertEqual(result2, 13213086906101)
     }
+
+    func test_day25a() throws {
+        let input = self.testInput(day: 25) ?? ""
+        let result1 = Solution2022().day25a(input: input)
+    }
 }

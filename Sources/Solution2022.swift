@@ -1351,4 +1351,58 @@ class Solution2022 {
         Logger.v(self.logTag, "Result: \(result.readable)")
         return result
     }
+
+    func day25a(input: String) -> String {
+        func snafu2Int(_ snafu: String) -> Int {
+            var base = snafu.count.decremented
+            var result = 0
+            for pos in 0..<snafu.count {
+                var digit = 0
+                let sign = snafu[pos].string
+                switch sign {
+                case "-":
+                    digit = -1
+                case "=":
+                    digit = -2
+                default:
+                    digit = Int(sign)!
+                }
+                result += digit * Int(pow(5.0, Double(base)))
+                base.decrement()
+            }
+            return result
+        }
+
+        func int2Snafu(_ number: Int) -> String {
+            var snafu = ""
+            var number = number
+            var base = 1
+            while number > 0 {
+                let rest = number % Int(pow(5.0, Double(base)))
+                print("number: \(number), \(Int(pow(5.0, Double(base)))), rest: \(rest)")
+                number -= rest
+                base.increment()
+                switch rest / 5 {
+                case 0...2:
+                    snafu = "\(rest)" + snafu
+                case 4:
+                    snafu = "-" + snafu
+                case 3:
+                    snafu = "=" + snafu
+                default:
+                    fatalError("Received \(rest)")
+                }
+            }
+            return snafu
+        }
+        print("96 should be 1--1  \(int2Snafu(96))")
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+        var sum = 0
+        for line in lines {
+            sum += snafu2Int(line)
+            print("\(line) is \(snafu2Int(line))")
+        }
+        print("Sum: \(sum)")
+        return "\(sum)"
+    }
 }

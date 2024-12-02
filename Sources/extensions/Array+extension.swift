@@ -257,6 +257,10 @@ extension Array {
     mutating func removeLast(amount: Int) {
         self = Array(self.dropLast(amount))
     }
+    
+    func removedLast(amount: Int) -> Array {
+        Array(self.dropLast(amount))
+    }
 
     var reversed: [Element] {
         Array(self.reversed())
