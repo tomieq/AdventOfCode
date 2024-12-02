@@ -187,6 +187,12 @@ extension Array {
 }
 
 extension Array {
+    func removed(index: Int) -> [Element] {
+        self.enumerated().filter{ $0.offset != index }.map{ $0.element }
+    }
+}
+
+extension Array {
     mutating func append(_ elem: Element?) {
         guard let strong = elem else {
             return
