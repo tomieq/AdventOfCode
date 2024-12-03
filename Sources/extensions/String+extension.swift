@@ -176,3 +176,12 @@ extension String {
         return self
     }
 }
+
+extension String {
+    func indexOf(_ searchString: String) -> Int? {
+        guard let range = self.range(of: searchString) else {
+            return nil
+        }
+        return self.distance(from: self.startIndex, to: range.lowerBound)
+    }
+}

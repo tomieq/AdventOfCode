@@ -21,4 +21,11 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertEqual("123456789".cut(into: 3), ["123", "456", "789"])
         XCTAssertEqual("12345678".cut(into: 4), ["12", "34", "56", "78"])
     }
+    
+    func test_searchOtherStringIndex() {
+        let text = "My name is Tomek and I like programming"
+        XCTAssertEqual(text.indexOf("Tomek"), 11)
+        XCTAssertEqual(text.subString(0, text.indexOf("Tomek")!), "My name is ")
+        XCTAssertEqual(text.dropFirst(text.indexOf("Tomek")!), "Tomek and I like programming")
+    }
 }

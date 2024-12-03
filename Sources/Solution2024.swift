@@ -66,11 +66,11 @@ class Solution2024 {
                     }
                     return element - nextNumber
                 }
-        }.filter { list in
-            list.allSatisfy { (1...3).contains(abs($0)) }
-        }.filter { list in
-            list.allSatisfy { $0 > 0} || list.allSatisfy { $0 < 0}
-        }.count
+            }.filter { list in
+                list.allSatisfy { (1...3).contains(abs($0)) }
+            }.filter { list in
+                list.allSatisfy { $0 > 0} || list.allSatisfy { $0 < 0}
+            }.count
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
@@ -101,6 +101,47 @@ class Solution2024 {
                 }
                 return false
             }.count
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+    
+    // MARK: Day 3 - part 1
+    func cpuInstructions(input: String) -> Int {
+        var result = 0
+        do {
+            let pattern = #"mul\(\d+,\d+\)"#
+            let regex = try NSRegularExpression(pattern: pattern, options: [])
+            
+            let matches = regex.matches(in: input, options: [], range: NSRange(input.startIndex..., in: input))
+            
+            result =  matches.map {
+                String(input[Range($0.range, in: input)!])
+            }.map {
+                $0.trimming("mul(")
+                    .trimming(")")
+                    .split(",")
+                    .compactMap{ $0.decimal }
+                    .reduce(1, *)
+            }.reduce(0, +)
+        } catch {
+            print("Error: \(error)")
+        }
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+    
+    // MARK: Day 3 - part 2
+    func cpuInstructionsWithEnabling(input: String) -> Int {
+        var text = input
+        var result = 0
+        while let disableIndex = text.indexOf("don't()") {
+            result += cpuInstructions(input: text.subString(0, disableIndex))
+            text = text.subString(disableIndex + 7, text.count)
+            if let enableIndex = text.indexOf("do()") {
+                text = text.subString(enableIndex, text.count)
+            }
+        }
+        result += cpuInstructions(input: text)
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
