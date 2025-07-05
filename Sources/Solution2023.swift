@@ -11,7 +11,7 @@ import Foundation
 
 class Solution2023 {
     private let logTag = "Solution2023"
-/*
+
     // MARK: Day 1 - part 1
     func sumOfNumbers(input: String) -> Int {
         let result = input.split("\n")
@@ -1069,7 +1069,7 @@ class Solution2023 {
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
-    */
+
     // MARK: Day 16 - part §
     func lightBeamWithMirrors(input: String) -> Int {
 

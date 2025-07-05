@@ -55,5 +55,15 @@ final class Solution2024Tests: XCTestCase {
         let result2 = Solution2024().cpuInstructionsWithEnabling(input: input)
         XCTAssertEqual(result2, 76729637)
     }
+    
+    func test_day4() throws {
+//        let input = self.prodInput(day: 3) ?? ""
+        let input = self.testInput(day: 4) ?? ""
+        
+        let result1 = Solution2024().findText(input: input)
+//        XCTAssertEqual(result1, 178794710)
+//        let result2 = Solution2024().cpuInstructionsWithEnabling(input: input)
+//        XCTAssertEqual(result2, 76729637)
+    }
 
 }

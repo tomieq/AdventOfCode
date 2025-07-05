@@ -25,7 +25,7 @@ final class Solution2023Tests: XCTestCase {
         }
         return Resource.getInput(absolutePath: self.absolutePath + "day\(dayNumber)/input\(suffix).txt")
     }
-/*
+
     func test_day1() throws {
         let input = self.prodInput(day: 1) ?? ""
         let result1 = Solution2023().sumOfNumbers(input: input)
@@ -131,7 +131,7 @@ final class Solution2023Tests: XCTestCase {
         let result2 = Solution2023().stringHash2(input: input)
         XCTAssertEqual(result2, 258826)
     }
-    */
+    
     func test_day18() throws {
         let input = self.prodInput(day: 18) ?? ""
         let result1 = Solution2023().diggingHole(input: input)    }

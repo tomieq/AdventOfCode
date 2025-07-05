@@ -117,8 +117,8 @@ class Solution2024 {
             result =  matches.map {
                 String(input[Range($0.range, in: input)!])
             }.map {
-                $0.trimming("mul(")
-                    .trimming(")")
+                $0.removed(text: "mul(")
+                    .removed(text: ")")
                     .split(",")
                     .compactMap{ $0.decimal }
                     .reduce(1, *)
@@ -142,6 +142,40 @@ class Solution2024 {
             }
         }
         result += cpuInstructions(input: text)
+        Logger.v(self.logTag, "Result = \(result)")
+        return result
+    }
+    
+    // MARK: Day 4 - part 1
+    func findText(input: String) -> Int {
+
+        var result = 0
+        var map: [Point: String] = [:]
+        let lines = input.split("\n").filter{ !$0.isEmpty }
+        for (y, line) in lines.enumerated() {
+            for (x, value) in line.array.enumerated() {
+                map[Point(x: x, y: y)] = value
+            }
+        }
+        func nextLetterPoint(point: Point, remainingLetters: String, direction: MoveDirection){
+            guard let letter = remainingLetters[safeIndex: 0]?.string else {
+                result.increment()
+                return
+            }
+            guard map[point] == letter else {
+                return
+            }
+            let restLetters = String(remainingLetters.dropFirst())
+            nextLetterPoint(point: point.move(direction), remainingLetters: restLetters, direction: direction)
+        }
+        map.filter{ $0.value == "X" }.forEach {
+
+            for direction in MoveDirection.allCases {
+                nextLetterPoint(point: $0.key.move(direction),
+                                remainingLetters: "MAS",
+                                direction: direction)
+            }
+        }
         Logger.v(self.logTag, "Result = \(result)")
         return result
     }
